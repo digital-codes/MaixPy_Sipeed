@@ -2,78 +2,159 @@
 title: 将 ONNX 模型转换为 MaixCAM MaixPy 可以使用的模型（MUD）
 ---
 
-> MaixCAM2 模型转换请看[MaixCAM2 模型转换文档](./maixcam2.md)
+> MaixCAM2 模型转换请看 [MaixCAM2 模型转换文档](./maixcam2.md)
 
 ## 简介
 
-电脑上训练的模型不能直接给 MaixCAM 使用，因为 MaixCAM 的硬件性能有限，一般我们需要将模型进行`INT8`量化以减少计算量，并且转换为 MaixCAM 支持的模型格式。
-
-本文介绍如何将 ONNX 模型转换为 MaixCAM 能使用的模型（MUD模型）。
-
+电脑上训练的模型不能直接给 MaixCAM / MaixCAM-Pro 使用，需要先将模型转换为设备支持的 `.cvimodel` 格式，并配套编写 `.mud` 模型描述文件。本文以 YOLOv8 检测模型为例，说明从 ONNX 到 MaixCAM 可运行模型的完整流程。
 
 ## MaixCAM 支持的模型文件格式
 
-MUD（模型统一描述文件， model universal description file）是 MaixPy 支持的一种模型描述文件，用来统一不同平台的模型文件，方便 MaixPy 代码跨平台，本身是一个 `ini`格式的文本文件，可以使用文本编辑器编辑。
-一般 MUD 文件会伴随一个或者多个实际的模型文件，比如对于 MaixCAM， 实际的模型文件是`.cvimodel`格式， MUD 文件则是对它做了一些描述说明。
+MUD（Model Universal Description，模型统一描述文件）是 MaixPy 支持的模型描述文件，用来统一不同平台的模型加载方式。它本质上是一个 `ini` 格式的文本文件，可以使用文本编辑器编辑。
 
+对于 MaixCAM / MaixCAM-Pro，实际模型文件是 `.cvimodel`，`.mud` 文件负责描述模型文件路径、模型类型、预处理参数和类别列表。常见文件组合如下：
+
+```text
+yolov8n.mud
+yolov8n_int8.cvimodel
+```
+
+使用时建议把 `.mud` 和 `.cvimodel` 放在同一个目录，避免路径写错。
 
 ## 准备 ONNX 模型
 
-准备好你的 onnx 模型， 然后在[https://netron.app/](https://netron.app/) 查看你的模型，确保你的模型使用的算子在转换工具的支持列表中，转换工具的支持列表可以在[算能 TPU SDK](https://developer.sophgo.com/thread/473.html)的 **CVITEK_TPU_SDK开发指南.pdf** 中看到列表。
+本节的目标是先得到一个可以被 `tpu-mlir` 读取的 `.onnx` 文件。ONNX 一般来自下面几种情况：
 
+1. **自己训练后导出**：例如 YOLOv8 / YOLO11 训练得到 `.pt` 文件后，按 [离线训练 YOLO 模型](../vision/customize_model_yolov8.md) 中的“导出 ONNX 模型”步骤导出。MaixCAM 常用输入尺寸为 `320x224`，建议使用固定输入尺寸，不要使用动态输入尺寸。
+2. **其它训练框架导出**：例如 PyTorch、TensorFlow 等框架训练后导出 ONNX。导出后需要确认模型输入尺寸固定，并且输入、输出节点可以在 Netron 中正常查看。
+3. **第三方提供的 ONNX**：可以直接从 ONNX 开始转换，但需要确认模型授权可用，并且模型结构适合在 MaixCAM 上运行。
+
+若已获取 `.mud` 和 `.cvimodel` 文件，表示该模型已完成面向 MaixCAM 的转换，可直接部署使用，无需执行本文转换流程。
+
+获取 ONNX 文件后，建议将其放置在独立工作目录，并统一命名为 `model.onnx`。随后使用 [Netron](https://netron.app/) 打开模型，核对并记录以下信息：
+
+| 信息项 | 获取方式 | 后续用途 |
+| --- | --- | --- |
+| 输入节点名称 | 在 Netron 的输入节点区域查看，常见名称为 `images` | 用于 ONNX 裁剪命令的输入参数 |
+| 输入尺寸 | 在 Netron 的输入节点形状中查看，例如 `1x3x224x320` | 用于 `model_transform.py` 的 `--input_shapes` 参数 |
+| 候选输出节点 | 查看模型末端用于后处理前的输出节点 | 用于 ONNX 裁剪命令和 `model_transform.py` 的 `--output_names` 参数 |
+
+同时需要确认模型算子位于 `tpu-mlir` 支持范围内。MaixCAM 对应 `cv181x` 处理器；若转换过程中提示某个算子不受支持，应回到训练 / 导出阶段调整模型结构，或选用 MaixPy 已支持的模型结构。
 
 ## 找出合适的量化输出节点
-[详细参考这里](./onnx_export.md)
-假设你裁剪得到的onnx文件是`export.onnx`。
+
+本节的目标是得到裁剪后的 `export.onnx`，后面的转换命令会直接使用它。
+
+很多检测模型在 ONNX 末尾带有后处理节点，这些节点通常更适合由 CPU 处理。直接把完整 ONNX 拿去量化，可能会导致量化误差变大或转换失败。因此需要先选择合适的输出节点，再裁剪 ONNX。
+
+可按下表选择常见模型的输出节点。节点选择依据可参考 [离线训练 YOLO 模型 - 输出节点选择](../vision/customize_model_yolov8.md)；YOLOv5 和分类模型的裁剪原则可参考 [裁剪 ONNX 模型节点教程](./onnx_export.md)。
+
+| 模型类型 | 推荐输出节点选择 | 下一步 |
+| --- | --- | --- |
+| YOLOv8 检测模型 | MaixCAM 推荐使用 `/model.22/dfl/conv/Conv_output_0` 和 `/model.22/Sigmoid_output_0` | 复制节点名后裁剪 ONNX |
+| YOLO11 检测模型 | MaixCAM 推荐使用 `/model.23/dfl/conv/Conv_output_0` 和 `/model.23/Sigmoid_output_0` | 复制节点名后裁剪 ONNX |
+| YOLOv5 检测模型 | 常见为三个检测头输出，例如 `/model.24/m.0/Conv_output_0`、`/model.24/m.1/Conv_output_0`、`/model.24/m.2/Conv_output_0` | 复制节点名后裁剪 ONNX |
+| pose / seg / obb 模型 | 输出节点数量更多，按 [离线训练 YOLO 模型](../vision/customize_model_yolov8.md) 的“输出节点选择”表选择 MaixCAM 方案 | 复制对应节点名后再裁剪 |
+| 分类模型 | 一般取最后一层分类输出；如果末尾有 `softmax`，建议取 `softmax` 前一层输出 | 记录该输出节点名 |
+
+如果你的节点名称和表格不完全一致，请用 Netron 找到位置相同、含义相同的输出节点，而不是机械复制。确定输入节点名和输出节点名后，先安装裁剪和简化 ONNX 需要的工具：
+
+```bash
+pip install onnx onnxsim
+```
+
+以 YOLOv8 检测模型为例，执行下面命令裁剪 ONNX：
+
+```bash
+python -c "import onnx,sys; onnx.utils.extract_model(sys.argv[1], sys.argv[2], [s.strip() for s in sys.argv[3].split(',')], [s.strip() for s in sys.argv[4].split(',')])" model.onnx tmp_extract.onnx "images" "/model.22/dfl/conv/Conv_output_0,/model.22/Sigmoid_output_0"
+onnxsim tmp_extract.onnx export.onnx
+```
+
+请把命令中的：
+
+* `model.onnx` 替换为你的原始 ONNX 文件名。
+* `"images"` 替换为 Netron 中看到的输入节点名。
+* `"/model.22/dfl/conv/Conv_output_0,...` 替换为你选择的输出节点名，多个节点用英文逗号分隔。
+
+命令执行成功后，当前目录会得到 `export.onnx`。后文所有 `--model_def ./export.onnx` 都指这个裁剪并简化后的文件。更完整的裁剪说明可看 [裁剪 ONNX 模型节点教程](./onnx_export.md)。
 
 ## 安装模型转换环境
 
-模型转换使用算能的[https://github.com/sophgo/tpu-mlir](https://github.com/sophgo/tpu-mlir)，要安装它我们直接在 docker 环境中安装，防止我们电脑的环境不匹配，如果你没用过 docker，可以简单理解成它类似虚拟机。
+MaixCAM 模型转换使用算能的 [tpu-mlir](https://github.com/sophgo/tpu-mlir)。建议放在 Docker 容器中运行，避免本机 Python、系统库版本不一致导致转换失败。
 
-### 拉取 docker 镜像
+如果电脑还没有安装 Docker，请先按 [Docker 官方文档](https://docs.docker.com/engine/install/ubuntu/) 安装。安装完成后执行下面命令，能看到版本号就表示 Docker 可用：
+
+```shell
+docker --version
+```
+
+然后拉取转换环境镜像：
 
 ```shell
 docker pull sophgo/tpuc_dev:latest
 ```
 
-如果docker拉取失败，可以通过以下方式进行下载：
+如果拉取失败，可以按 tpu-mlir 官方说明下载镜像压缩包并加载：
+
 ```shell
 wget https://sophon-file.sophon.cn/sophon-prod-s3/drive/24/06/14/12/sophgo-tpuc_dev-v3.2_191a433358ad.tar.gz
 docker load -i sophgo-tpuc_dev-v3.2_191a433358ad.tar.gz
 ```
-这个方法参考[tpu-mlir官方docker环境配置](https://github.com/sophgo/tpu-mlir/blob/master/README_cn.md)。
 
-此外你也可以设置国内的镜像，可自行搜索或者参考[docker 设置代理，以及国内加速镜像设置](https://neucrack.com/p/286)。
-
-
-### 运行容器
+加载完成后查看实际镜像名：
 
 ```shell
-docker run --privileged --name tpu-env -v ./:/workspace -it sophgo/tpuc_dev:v3.2
+docker images | grep tpuc
 ```
 
-首先创建一个容器，名叫`tpu-env`，并且把当前目录挂载到了容器的`/workspace`，这样就实现了文件共享，请把`export.onnx`放在当前目录。
+进入模型转换工作目录并启动容器：
 
-下次启动容器用`docker start tpu-env && docker attach tpu-env`即可。
+```shell
+mkdir -p ~/maixcam_convert
+cd ~/maixcam_convert
+docker run --privileged --rm -it -v "$PWD":/workspace -w /workspace sophgo/tpuc_dev:latest
+```
 
+如果你的镜像名不是 `sophgo/tpuc_dev:latest`，请把命令最后的镜像名替换为 `docker images` 看到的实际名称。进入容器后，当前目录就是 `/workspace`，后面的 `export.onnx`、测试图片和校准图片都放在这个目录里。
 
-### 安装 tpu-mlir
+在容器内安装并检查 `tpu-mlir`：
 
 ```shell
 pip install tpu_mlir
+model_transform.py --help
 ```
 
-之后在容器内**直接输入**`model_transform.py`回车执行会有打印帮助信息就算是安装成功了。
+如果 `model_transform.py --help` 能输出帮助信息，说明环境可用。
 
-## 转换onnx模型到cvimodel
+## 转换 ONNX 模型到 cvimodel
 
-转换模型主要就两个命令，`model_transform.py` 和 `model_deploy.py`，下面请根据教程在终端里面调整参数，以yolov5s为例,其他模型请自行修改文件路径，**注意运行的前后顺序**。
+运行转换前，工作目录中至少应准备好这些文件：
 
-`第一步`
-> 注意`--model_def`，`--test_result`，`--mlir`，`--test_input`的路径和后续的文件路径是否一致，其他的参数请参考下面的表格调整。
+```text
+.
+├── export.onnx
+├── test.jpg
+└── images/
+    ├── 0001.jpg
+    ├── 0002.jpg
+    └── ...
+```
+
+| 文件 | 如何得到 | 作用 |
+| --- | --- | --- |
+| `export.onnx` | 上一步裁剪并简化 ONNX 后得到 | 作为 `model_transform.py` 的输入模型 |
+| `test.jpg` | 任意一张符合模型输入场景的测试图片 | 用于转换时对比 ONNX 和 MLIR 输出 |
+| `images/` | 放 20 到 200 张真实场景图片 | 用于 INT8 量化校准 |
+
+图片越接近实际使用场景，量化后的模型效果越稳定。例如要识别桌面物体，就放桌面环境下拍摄的图片；要识别产线物料，就放产线相机拍到的图片。
+
+### 生成 MLIR 中间文件
+
+以 YOLOv8 检测模型为例，先执行 `model_transform.py`：
+
 ```bash
 model_transform.py \
---model_name yolov5s \
+--model_name yolov8n \
 --model_def ./export.onnx \
 --input_shapes [[1,3,224,320]] \
 --mean "0,0,0" \
@@ -81,90 +162,80 @@ model_transform.py \
 --keep_aspect_ratio \
 --pixel_format rgb \
 --channel_format nchw \
---output_names "/model.24/m.0/Conv_output_0,/model.24/m.1/Conv_output_0,/model.24/m.2/Conv_output_0" \
---test_input ./zidane.jpg \
---test_result yolov5s_top_outputs.npz \
+--output_names "/model.22/dfl/conv/Conv_output_0,/model.22/Sigmoid_output_0" \
+--test_input ./test.jpg \
+--test_result yolov8n_top_outputs.npz \
 --tolerance 0.99,0.99 \
---mlir yolov5s.mlir
+--mlir yolov8n.mlir
 ```
 
+这个命令成功后，会得到 `yolov8n.mlir`、`yolov8n_in_f32.npz` 和 `yolov8n_top_outputs.npz`。后面的部署命令会继续使用这些文件。
 
-| 关键参数 | 含义 | 说明/建议 | 示例 |
-|---|---|---|---|
-| `output_names` | 输出节点的输出名 | 就是前面提到的模型输出节点名称，需要与实际模型导出后的输出名一致。 | `--output_names "output0"` |
-| `mean, scale` | 训练时使用的预处理方法 | 例如 YOLOv5 官方预处理通常是对 RGB 3 个通道做归一化。默认可理解为 `mean=0`、`std=255`，即把图像像素值归一化到较小范围，因此 `scale=1/std`。这里需要根据你自己的模型实际预处理方式进行修改。 | `--mean "0,0,0"`，`--scale "0.00392156862745098,0.00392156862745098,0.00392156862745098"` |
-| `test_input` | 转换时用来测试的图像 | 例如这里使用 `../dog.jpg`，所以实际转换模型时，需要在此脚本所在目录附近放置对应测试图片。你的模型应根据实际情况替换为自己的测试图像。 | `--test_input ./zidane.jpg` |
-| `tolerance` | 量化前后允许的误差 | 如果转换时报错，提示误差值大于该设置，说明转换后的模型相比 ONNX 模型误差可能较大。如果可以容忍，可适当调整该阈值让转换通过；但大多数情况下，误差大往往是模型结构或后处理导致的，需要优化模型，并尽量移除可去除的后处理。 | `--tolerance 0.99,0.99` |
-| `model_def` | 裁剪节点后的onnx文件 | | `--model_def ./export.onnx` |
-| `mlir` | 转换后的mlir中间产物文件 | | `--mlir yolov5s.mlir` |
-| `test_result` | `test_input`输入图像转换得到的中间文件，用于后续处理 | | `--test_result yolov5s_top_outputs.npz ` |
-| `input_shapes` | 待转换模型的输入尺寸 |由于模型输入图像的尺寸是固定的，请根据你MaixCAM输入的图像灵活调整，需要在onnx的导出阶段就确定好你的图像尺寸 | `--input_shapes [[1,3,224,320]]` |
+关键参数说明：
 
+| 参数 | 填写内容 |
+| --- | --- |
+| `--model_name` | 模型名称，用于生成中间文件名，例如 `yolov8n` |
+| `--model_def` | 裁剪后的 ONNX，例如 `./export.onnx` |
+| `--input_shapes` | 模型输入尺寸，顺序是 `[N,C,H,W]`，例如 `[[1,3,224,320]]` |
+| `--mean` / `--scale` | 训练时使用的预处理参数，需要和训练、导出时保持一致 |
+| `--output_names` | ONNX 输出节点名，必须和裁剪 `export.onnx` 时选择的输出节点一致 |
+| `--test_input` | 测试图片路径，例如 `./test.jpg` |
+| `--test_result` | 输出对比结果文件，下一步会作为参考 |
+| `--mlir` | 生成的 MLIR 中间文件 |
 
+### 生成 INT8 cvimodel
 
-`第二步`
+MaixCAM 上一般优先使用 INT8 模型，速度更快、内存占用更低。先用校准图片生成量化表：
 
-> 注意`--model_def`，`--test_result`，`--mlir`，`--test_input`，的路径和前面的文件路径是否一致，其他的参数请参考下面的表格调整。
-> 第一个是bf16的转化过程，第二个是int8的转化过程，int8模型需要多经过一层校准，请注意区分。
-`bf16`
 ```bash
-# export bf16 model
-#   not use --quant_input, use float32 for easy coding
-model_deploy.py \
---mlir yolov5s.mlir \
---quantize BF16 \
---processor cv181x \
---test_input yolov5s_in_f32.npz \
---test_reference yolov5s_top_outputs.npz \
---model yolov5s_bf16.cvimodel
-```
-
-
-`int8`
-```bash
-#  "calibrate for int8 model"
-# export int8 model
-run_calibration.py yolov5s.mlir \
+run_calibration.py yolov8n.mlir \
 --dataset ./images \
---input_num 1 \
--o yolov5s_cali_table
+--input_num 50 \
+-o yolov8n_cali_table
+```
 
-#  "convert to int8 model"
-# export int8 model
-#    add --quant_input, use int8 for faster processing in maix.nn.NN.forward_image
+`--input_num` 表示实际参与校准的图片数量，不能大于 `images/` 目录中的图片数量。新手可以先准备 50 张左右真实场景图片，后续根据效果再增加。
+
+然后生成 `.cvimodel`：
+
+```bash
 model_deploy.py \
---mlir yolov5s.mlir \
+--mlir yolov8n.mlir \
 --quantize INT8 \
 --quant_input \
---calibration_table yolov5s_cali_table \
+--calibration_table yolov8n_cali_table \
 --processor cv181x \
---test_input yolov5s_in_f32.npz \
---test_reference yolov5s_top_outputs.npz \
+--test_input yolov8n_in_f32.npz \
+--test_reference yolov8n_top_outputs.npz \
 --tolerance 0.9,0.6 \
---model yolov5s_int8.cvimodel
+--model yolov8n_int8.cvimodel
 ```
 
-| 关键参数 | 含义 | 说明/建议 | 示例 |
-|----------|------|-----------|------|
-| `quantize` | 量化的数据类型 | 在 MaixCAM 上一般优先使用 `INT8` 模型。`BF16` 模型精度较高，但运行速度通常较慢。因此，推荐优先尝试转换为 `INT8`；如果无法转换，或对精度要求更高且对速度要求不高，再考虑 `BF16`。 | `--quantize INT8` / `--quantize BF16` |
-| `dataset`  | 用于量化的数据集 | 数据集通常放在转换脚本同目录下，例如这里的 `images` 文件夹。对于 YOLOv5，一般放图片即可，可以从 COCO 数据集中挑选一部分典型场景图片。`--input_num` 可指定实际使用的图片数量，且应小于等于 `images` 目录中的实际图片数。 | `--dataset ./images` |
-| `mlir`  | 转换前的mlir文件 | 需要和`model_transform.py`转换得到的mlir文件一致 | `--mlir yolov5s.mlir` |
-| `test_input`  | 测试用的npz文件 | 需要和`model_transform.py`中使用的参数`test_result`得到的npz文件一致 | `--test_input yolov5s_in_f32.npz ` |
-| `model`  | 最终得到的cvimodel | 将得到的cvimodel放入MaixCAM中并在该目录下配置mud文件即可经过MaixPy调用 | `--model yolov5s_int8.cvimodel` |
+执行成功后，当前目录会得到 `yolov8n_int8.cvimodel`。
 
+如果 INT8 转换失败，可以先检查输出节点、输入尺寸、预处理参数和校准图片是否正确。确实无法通过时，再尝试 BF16：
 
+```bash
+model_deploy.py \
+--mlir yolov8n.mlir \
+--quantize BF16 \
+--processor cv181x \
+--test_input yolov8n_in_f32.npz \
+--test_reference yolov8n_top_outputs.npz \
+--model yolov8n_bf16.cvimodel
+```
 
-## 编写`mud`文件
+BF16 模型通常精度更容易保持，但速度和内存占用一般不如 INT8，建议只作为排查或特殊精度需求时使用。
 
+## 编写 mud 文件
 
-> 注：mud和cvimodel必须在同一文件目录。
-
-这里以 `YOLOv8` 模型文件举例，一共两个文件`yolov8n.mud`和`yolov8n.cvimodel`，前者内容：
+`.mud` 和 `.cvimodel` 必须放在同一个目录。以 `yolov8n_int8.cvimodel` 为例，新建 `yolov8n.mud`：
 
 ```ini
 [basic]
 type = cvimodel
-model = yolov8n.cvimodel
+model = yolov8n_int8.cvimodel
 
 [extra]
 model_type = yolov8
@@ -174,41 +245,68 @@ scale = 0.00392156862745098, 0.00392156862745098, 0.00392156862745098
 labels = person, bicycle, car, motorcycle, airplane, bus, train, truck, boat, traffic light, fire hydrant, stop sign, parking meter, bench, bird, cat, dog, horse, sheep, cow, elephant, bear, zebra, giraffe, backpack, umbrella, handbag, tie, suitcase, frisbee, skis, snowboard, sports ball, kite, baseball bat, baseball glove, skateboard, surfboard, tennis racket, bottle, wine glass, cup, fork, knife, spoon, bowl, banana, apple, sandwich, orange, broccoli, carrot, hot dog, pizza, donut, cake, chair, couch, potted plant, bed, dining table, toilet, tv, laptop, mouse, remote, keyboard, cell phone, microwave, oven, toaster, sink, refrigerator, book, clock, vase, scissors, teddy bear, hair drier, toothbrush
 ```
 
-| 项目 | 说明 |
-|------|------|
-| 模型类别 |  `cvimodel`，MaixCAM2是`axmodel`。 |
-| 模型路径 | 相对 `mud` 文件路径下的 `yolov8n.cvimodel` 文件。 |
-| `mean` / `scale` | 预处理参数，需要与训练时模型输入数据的预处理方法保持一致。 |
-| `labels` | 检测对象的类别列表，这里对应 80 种分类。 |
-| 文件放置方式 | 实际使用时，将模型文件和 `mud` 文件放在同一目录下即可。 |
-| 自定义模型修改项 | 根据你的模型情况，在 `mud` 文件中修改你训练得到的 `labels` 即可。 |
+这里需要根据自己的模型修改下面几项：
 
-实际用这个模型的时候将两个文件放在同一个目录下即可。
+| 参数 | 说明 |
+| --- | --- |
+| `model` | `.cvimodel` 文件名，例如 `yolov8n_int8.cvimodel` |
+| `model_type` | MaixPy 已支持的模型类型，例如 `yolov5`、`yolov8`、`yolo11`、`classifier` |
+| `mean` / `scale` | 预处理参数，需要与训练、导出、转换时保持一致 |
+| `labels` | 模型类别列表，必须和训练数据集的类别数量、顺序完全一致 |
 
-根据你的模型情况，在`mud`文件修改你训练的`labels`就好了。
+例如训练的是数字检测模型，类别顺序为 `0` 到 `9`，则 `labels` 应写为：
 
-这里`basic`部分指定了模型文件类别和模型文件路径，是必要的参数，有了这个参数就能用`MaixPy`或者`MaixCDK`中的`maix.nn.NN`类来加载并运行模型了。
+```ini
+labels = 0,1,2,3,4,5,6,7,8,9
+```
 
+## 部署到设备和快速验证
 
-`extra`则根据不同模型的需求设计不同参数。
-比如这里对`YOLOv5`设计了这些参数，主要是 预处理、后处理、标签等参数。
-对于 `MaixPy` 已经支持了的模型可以直接下载其模型复制修改。
-也可以看具体的代码，比如[YOLOv5 的源码](https://github.com/sipeed/MaixCDK/blob/71d5b3980788e6b35514434bd84cd6eeee80d085/components/nn/include/maix_nn_yolov5.hpp#L73-L223)，可以看到源码使用了哪些参数。
+MaixPy 加载模型时通常只需要指定 `.mud` 文件路径，`.mud` 中会再指向实际的 `.cvimodel` 文件。最省心的做法是把它们放在同一个目录，例如：
 
-比如你用`YOLOv5`训练了检测数字`0~9`的模型，那么需要将`labels`改成`0,1,2,3,4,5,6,7,8,9`，其它参数如果你没改训练代码保持即可。
+```text
+/root/models/yolov8n.mud
+/root/models/yolov8n_int8.cvimodel
+```
 
-如果你需要移植 `MaixPy` 没有支持的模型，则可以根据模型的预处理和后处理情况定义 `extra`, 然后编写对应的解码类。如果你不想用C++修改 MaixPy 源码，你也可以用MaixPy 的`maix.nn.NN`类加载模型，然后用 `forward` 或者 `forward_image` 方法或者原始输出，在 Python 层面写后处理也可以，只是运行效率比较低不太推荐。
+然后在代码中先确认模型能被加载：
 
+```python
+from maix import nn
+
+model = nn.NN("/root/models/yolov8n.mud")
+print(model)
+```
+
+如果是 MaixPy 已经支持的模型类型，优先使用对应封装好的 API，例如 YOLO 可以参考 [YOLO 目标检测文档](../vision/yolov5.md)：
+
+```python
+from maix import nn
+
+detector = nn.YOLOv8(model="/root/models/yolov8n.mud", dual_buff=True)
+```
+
+## 调试时先检查这些问题
+
+模型无法加载或运行结果不对时，先按这个顺序排查：
+
+1. `.mud` 和 `.cvimodel` 是否在同一个目录，`.mud` 里的 `model` 文件名是否写对。
+2. 设备上填写的路径是否真实存在，比如 `/root/models/yolov8n.mud`。
+3. `labels` 是否和训练时的类别数量、顺序完全一致。
+4. `model_type` 是否是 MaixPy 已经支持的类型，比如 `yolov5`、`yolov8`、`yolo11`、`classifier` 等。
+5. 输入分辨率、`mean`、`scale`、RGB/BGR 顺序是否和训练、导出、转换时保持一致。
+6. ONNX 输出节点、裁剪命令和 `model_transform.py` 的 `--output_names` 是否完全一致。
+7. 如果不确定是模型问题还是代码问题，先换 MaixHub 或系统内置模型测试；官方模型能跑通后，再调试自己的模型。
+
+确认这些基础项没有问题后，再继续查看对应模型文档或转换流程。如果是 MaixPy 尚未封装的新模型，继续阅读下一节。
 
 ## 编写后处理代码
 
-如上一步所说，如果是按照已经支持的模型的`mud`文件修改好，那直接调用`MaixPy`或者`MaixCDK`对应的代码加载即可。
-如果支持新模型，设计好 `mud` 文件后，你需要实际编写预处理和后处理，有两种方法：
-* 一：MaixPy 用 `maix.nn.NN`加载模型，然后`forward`或者`forward_image`函数运行模型，获得输出，然后用 Python 函数编写后处理得到最终结果。
-* 二：在`MaixCDK`中，可以参考[YOLOv5 的源码](https://github.com/sipeed/MaixCDK/blob/71d5b3980788e6b35514434bd84cd6eeee80d085/components/nn/include/maix_nn_yolov5.hpp), 新增一个`hpp`文件，增加一个处理你的模型的类，并且修改所有函数和类的`@maixpy`注释，编写好了编译`MaixPy`项目，即可在`MaixPy`中调用新增的类来运行模型了。
+如果模型类型已经被 MaixPy 支持，例如 YOLO 或分类模型，通常不需要自己写后处理，直接调用对应 API 即可。
 
-支持了新模型后还可以将源码提交（Pull Request）到主`MaixPy`仓库中，成为`MaixPy`项目的一员，为社区做贡献，也可以到 [MaixHub 分享](https://maixhub.com/share) 分享你新支持的模型，根据质量可以获得最少 `30元` 最高 `2000元` 的打赏！
+如果是 MaixPy 尚未封装的新模型，需要根据模型输出自己实现后处理，可以按目标选择下面方式：
 
+* **快速验证**：使用 `maix.nn.NN` 加载 `.mud`，通过 `forward` 或 `forward_image` 得到原始输出，然后在 Python 中写后处理逻辑。完整流程可参考[移植新模型](../pro/customize_model.md)。
+* **正式封装**：在 `MaixCDK` 中新增模型解码类，让 `MaixCDK` 和 `MaixPy` 都可以调用，运行效率也更高。可以参考 [YOLOv5 源码](https://github.com/sipeed/MaixCDK/blob/71d5b3980788e6b35514434bd84cd6eeee80d085/components/nn/include/maix_nn_yolov5.hpp)，新增对应 `hpp` 文件，补齐 `@maixpy` 注释后重新编译 MaixPy。
 
-
-
+支持了新模型后还可以将源码提交（Pull Request）到主 `MaixPy` 仓库中，成为 `MaixPy` 项目的一员，为社区做贡献，也可以到 [MaixHub 分享](https://maixhub.com/share) 分享你新支持的模型，根据质量获得打赏。

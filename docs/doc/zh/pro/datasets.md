@@ -6,6 +6,14 @@ title: MaixCAM MaixPy 训练模型哪里能找到模型和数据集
 
 到[MaixHub 模型库](https://maixhub.com/model/zoo) 筛选对应的硬件平台即可找到。
 
+如果只是想验证功能，先用系统内置模型最省时间。设备系统一般会在 `/root/models` 目录内置常用模型，不需要额外下载，直接在代码里引用对应的 `.mud` 文件即可。
+
+如果需要更多模型，可以进入 [MaixHub 模型库](https://maixhub.com/model/zoo?platform=maixcam2)，筛选 MaixCAM2 平台，下载模型包。下载后重点确认文件里是否包含：
+
+- `.mud`：模型描述文件，MaixPy 代码通常加载这个文件。
+- `.axmodel`：实际运行在 MaixCAM2 上的模型文件。
+- 示例代码或说明文件：如果模型库页面提供了示例，优先按示例运行。
+
 ## 数据集有什么用
 
 可以先到[MaixHub 模型库](https://maixhub.com/model/zoo)看看有没有你需要的模型，如果没有，你可以自己训练模型，训练模型需要数据集，数据集就是用来训练模型的。

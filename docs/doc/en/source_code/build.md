@@ -35,7 +35,7 @@ cd ~/maix/MaixPy
 python setup.py bdist_wheel maixcam
 ```
 
-`maixcam` Can be replaced with other board config, see [setup.py]([./configs](https://github.com/sipeed/MaixPy/blob/main/setup.py)) 's `platform_names` variable.
+`maixcam` Can be replaced with other board config, see [setup.py](https://github.com/sipeed/MaixPy/blob/main/setup.py)'s `platform_names` variable.
 
 
 After build success, you will find wheel file in `dist` directory, use `pip install -U MaixPy****.whl` on your device to install or upgrade.
@@ -90,4 +90,3 @@ Then visit `http://127.0.0.1:2333` to preview documentation on web browser.
 See [MaixPy develop source code guide](./contribute.md)
 
 If you encounter any problems when use source code, please refer to [FAQ](./faq.md) first.
-

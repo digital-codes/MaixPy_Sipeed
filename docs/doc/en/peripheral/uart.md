@@ -345,18 +345,18 @@ For example, the coordinates detected by an AI detection application after ident
 
 ### Table of Contents
 
-1. [Quick Troubleshooting Flowchart](#1-quick-troubleshooting-flowchart)
-2. [Issue-Based Troubleshooting](#2-issue-based-troubleshooting)
-   - [Completely Unable to Communicate (No Data Sent or Received)](#21-completely-unable-to-communicate-no-data-sent-or-received)
-   - [Can Send but Cannot Receive](#22-can-send-but-cannot-receive)
-   - [Can Receive but Cannot Send](#23-can-receive-but-cannot-send)
-   - [Received Garbled Data](#24-received-garbled-data)
-   - [Data Loss or Incomplete Data](#25-data-loss-or-incomplete-data)
-   - [USB-Related Issues](#26-usb-related-issues)
-   - [Boot-Related Issues](#27-boot-related-issues)
-3. [Pin-to-UART Mapping Quick Reference](#3-pin-to-uart-mapping-quick-reference)
-4. [Code Templates and Examples](#4-code-templates-and-examples)
-5. [FAQ](#5-faq)
+1. [Quick Troubleshooting Flowchart](#1.-Quick-Troubleshooting-Flowchart)
+2. [Issue-Based Troubleshooting](#2.-Issue-Based-Troubleshooting)
+   - [Completely Unable to Communicate (No Data Sent or Received)](#2.1-Completely-Unable-to-Communicate-%28No-Data-Sent-or-Received%29)
+   - [Can Send but Cannot Receive](#2.2-Can-Send-but-Cannot-Receive)
+   - [Can Receive but Cannot Send](#2.3-Can-Receive-but-Cannot-Send)
+   - [Received Garbled Data](#2.4-Received-Garbled-Data)
+   - [Data Loss or Incomplete Data](#2.5-Data-Loss-or-Incomplete-Data)
+   - [USB-Related Issues](#2.6-USB-Related-Issues)
+   - [Boot-Related Issues](#2.7-Boot-Related-Issues)
+3. [Pin-to-UART Mapping Quick Reference](#3.-Pin-to-UART-Mapping-Quick-Reference)
+4. [Code Templates and Examples](#4.-Code-Templates-and-Examples)
+5. [FAQ](#5.-FAQ)
 
 ### 1. Quick Troubleshooting Flowchart
 
@@ -602,5 +602,4 @@ while not app.need_exit():
 | 8 | What are the strange characters printed during UART0 boot? | Those are system boot logs. Discard them until `serial ready` appears. |
 | 9 | I added a level shifter but the board still won’t boot? | Check whether UART0 TX (A16) is being pulled low by default. In this chip, TX low can prevent booting. Keep it floating or use a proper level shifter. |
 | 10 | Why does Chinese text appear garbled when sending? | Ensure the data is encoded as UTF-8 before sending and decoded as UTF-8 on the receiving side. |
-
 

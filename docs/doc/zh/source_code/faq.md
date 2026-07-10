@@ -18,7 +18,6 @@ maix_image.hpp
 maix_camera.hpp
 ```
 
-## /usr/bin/ld: /lib/libgdal.so.30: undefined reference to `std::condition_variable::wait(std::unique_lock<std::mutex>&)@GLIBCXX_3.4.30' collect2: error: ld returned 1 exit status
+## /usr/bin/ld: /lib/libgdal.so.30: undefined reference to `std::condition_variable::wait(std::unique_lock&lt;std::mutex&gt;&)@GLIBCXX_3.4.30' collect2: error: ld returned 1 exit status
 
 一般在为 Linux 构建时并且使用 conda 环境时容易出现，conda 环境中的一些库编译参数问题，解决方法就是不用 conda 即可， 或者单独找到 conda 中的那个库，替换成系统的或者直接删掉（会从系统找）
-

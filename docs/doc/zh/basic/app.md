@@ -97,7 +97,7 @@ print("backlight:", backlight, ", type:", type(backlight))
 ```ini
 # All configs user can edit easily
 # Format: maix_<item>_<key>=value
-#         all key charactors should be lowercase
+#         all key characters should be lowercase
 # Full supported items see documentation of maixpy at:
 #      https://wiki.sipeed.com/maixpy/doc/zh/basic/app.html
 
@@ -126,7 +126,6 @@ maix_backlight_value = 50
 maix_npu_ai_isp=0
 
 ```
-
 
 
 

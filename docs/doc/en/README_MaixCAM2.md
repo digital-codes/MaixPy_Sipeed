@@ -7,6 +7,12 @@ title: MaixCAM2 MaixPy Quick Start
         width: 100%;
         display: table;
     }
+    .biliiframe {
+      width: 100%;
+      min-height: 30em;
+      border-radius: 0.5em;
+      border: 1em solid white;
+    }
 
     @media screen and (max-width: 900px){
       #head_links th, #head_links td {
@@ -19,7 +25,11 @@ title: MaixCAM2 MaixPy Quick Start
 
 ## Getting Started
 
->! MaixCAM2 has built-in eMMC storage, so it can operate without requiring a TF card. If you need to upgrade or flash the system, please refer directly to the <a href="./basic/os" target="_blank">System Upgrade and Flashing</a> guide.
+>! MaixCAM2 is available in versions with and without eMMC storage. The 32GB eMMC version normally boots from eMMC and does not require a TF card for daily use; the version without eMMC must use a TF card with a flashed system to boot. A TF card can also be used to boot from TF card, or to flash or recover the system to eMMC. For system upgrade or flashing, see [System Upgrade and Flashing](./basic/os.md).
+
+### Getting Started Video
+
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115547387727388&bvid=BV1veCTBsEZa&cid=33995951833&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" class="biliiframe"></iframe>
 
 ### Power On
 
@@ -28,8 +38,8 @@ Use a `Type-C` data cable to connect the `MaixCAM` device and power it on. Wait 
 ![maixcam_font](../../static/image/maixcam_font.png)
 
 If the screen does not display:
-* Please confirm that you purchased the bundled TF card. If you confirm that you have a TF card and it is inserted into the device, you can try <a href="./basic/os" target="_blank">updating to the latest system</a>.
-* If you did not purchase the TF card bundle, you need to follow the instructions in <a href="./basic/os" target="_blank">updating to the latest system</a> to flash the latest system onto the TF card.
+* Please confirm that you purchased the bundled TF card. If you confirm that you have a TF card and it is inserted into the device, you can try [updating to the latest system](./basic/os.md).
+* If you did not purchase the TF card bundle, you need to follow the instructions in [updating to the latest system](./basic/os.md) to flash the latest system onto the TF card.
 * Also, ensure that the screen and camera cables are not loose. The screen cable can easily come off when opening the case, so be careful.
 
 ### Connect to the Network

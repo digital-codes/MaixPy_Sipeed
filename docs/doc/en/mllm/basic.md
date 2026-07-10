@@ -159,7 +159,7 @@ Using `lcm-lora-sdv1-5-maixcam2` as an example:
 
    > Notes:
    >
-   > 1. It is recommended to upload models via the USB network interface for higher transfer speed. For details on obtaining the USB network IP address, see[Wired Connection](../README_MaixCAM2.md)
+   > 1. It is recommended to upload models via the USB network interface for higher transfer speed. For details on obtaining the USB network IP address, see [Wired Connection](../README_MaixCAM2.html#Preparing-to-Connect-Computer-and-Device)
 
    ```shell
    scp -r lcm-lora-sdv1-5-maixcam2/lcm-lora-sdv1-5-maixcam2 root@192.168.10.100:/root/models

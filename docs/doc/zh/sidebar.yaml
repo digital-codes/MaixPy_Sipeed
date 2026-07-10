@@ -137,24 +137,26 @@ items:
         label: Whisper 语音识别模型
     -   file: mllm/tts_melotts.md
         label: MeloTTS 语音合成模型
--   label: AI 模型本地NPU部署
+-   label: AI 模型本地部署
     items:
-    -   file: ai_model_converter/maixcam2.md
-        label: ONNX 模型转给 MaixCAM2 用
-    -   file: ai_model_converter/maixcam.md
-        label: ONNX 模型转给 MaixCAM 用
-    -   file: ai_model_converter/onnx_export.md
-        label: 裁剪 ONNX 模型节点教程
-    -   file: ai_model_converter/web_converter.md
-        label: 图形化模型转换平台
+    -   file: ai_model_converter/ai_model_deploy.md
+        label: AI 模型下载和部署指南
     -   file: pro/datasets.md
         label: 哪里找模型和数据集
-    -   file: pro/customize_model.md
-        label: 移植新模型
-    -   file: vision/customize_model_yolo.md
-        label: 离线训练 YOLO 模型
     -   file: vision/maixhub_train.md
         label: MaixHub 在线训练 AI 模型
+    -   file: vision/customize_model_yolo.md
+        label: 离线训练 YOLO 模型
+    -   file: ai_model_converter/maixcam2.md
+        label: ONNX 模型转换为 MaixCAM2 模型
+    -   file: ai_model_converter/maixcam.md
+        label: ONNX 模型转换为 MaixCAM 模型
+    -   file: ai_model_converter/onnx_export.md
+        label: 裁剪 ONNX 模型输出节点
+    -   file: ai_model_converter/web_converter.md
+        label: 使用网页工具转换 YOLO 模型
+    -   file: pro/customize_model.md
+        label: 移植新的 AI 模型
 
 # -   label: YOLO模型零算法基础入门使用
 

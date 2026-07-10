@@ -14,7 +14,6 @@ title: MaixCAM MaixPy 快速开始
       border-radius: 0.5em;
       border: 1em solid white;
   }
-
     @media screen and (max-width: 900px){
       #head_links th, #head_links td {
           /* padding: 8px; */
@@ -50,12 +49,15 @@ title: MaixCAM MaixPy 快速开始
 > 关于 MaixPy 介绍请看 [MaixPy 官网首页](../../README.md)
 > 喜欢 MaixPy 请给 [ MaixPy 项目](https://github.com/sipeed/MaixPy) 点个 Star ⭐️ 以鼓励我们开发更多功能。
 
-## 快速预览
-<div align="center"><span style="color: #c33d45; font-weight: bold;">MaixCAM2(MaixCAM的升级版~)</span></div>
-<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115547387727388&bvid=BV1veCTBsEZa&cid=33995951833&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
+## 先选择你的设备
 
-<div align="center"><span style="color: #c33d45; font-weight: bold;">MaixCAM</span></div>
-<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=113485669204279&bvid=BV1ncmRYmEDv&cid=26768769718&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" class="biliiframe"></iframe>
+MaixCAM 系列型号较多，如果你是第一次使用，先看包装、订单名称或者设备外壳上的型号，再进入对应的上手文档。找对型号后再继续往下看视频和教程，可以少走很多弯路。
+
+| 设备型号 | 产品图 | 上手文档 |
+| --- | --- | --- |
+| MaixCAM2 | <img src="/static/image/maixcam2_front_back.png" alt="MaixCAM2" width="220"> | [快速开始 MaixCAM2](./README_MaixCAM2.md) |
+| MaixCAM / MaixCAM-Pro | <img src="/static/image/maixcams.png" alt="MaixCAM / MaixCAM-Pro" width="220"> | [快速开始 MaixCAM](./README_MaixCAM.md) |
+| MaixCAM Lite / 无屏幕版本 | <img src="/static/image/maixcam.png" alt="MaixCAM Lite / 无屏幕版本" width="220"> | [快速开始 MaixCAM 无屏幕版本](./README_no_screen.md) |
 
 ## 写在前面
 
@@ -63,13 +65,13 @@ title: MaixCAM MaixPy 快速开始
 * **左边目录**请仔细查看，基础部分一定要耐心阅读完。
 * **提问前**先在左边目录仔细查找文档，以及看[FAQ](./faq.md)。
 * 本文档是`MaixPy v4 教程文档`，注意与 [MaixPy-v1](https://wiki.sipeed.com/soft/maixpy/zh/index.html)（k210系列）区别开，勿错看文档。
-* 也可以参考下面的视频上手教程，注意视频内容有更正在**评论区和弹幕会补充，以最新的文档为准**，更多视频教程可以到 B 站搜索 MaixCAM。
+* 也可以参考下面的视频上手教程，注意视频内容有更正在**评论区和弹幕会补充，以最新的文档为准**。更多视频教程可从 [B站搜索 MaixCAM 或 MaixPy](https://search.bilibili.com/all?keyword=maixcam) 查看。
 <iframe src="//player.bilibili.com/player.html?isOutside=true&aid=112865415531014&bvid=BV1vcvweCEEe&cid=500001630687957&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" style="min-height:20em; width: 90%"></iframe>
 
 
 ## 获得 MaixCAM/MaixCAM2 设备
 
-![maixcam2](https://wiki.sipeed.com/static/image/maixcam2_front_back.png)
+![maixcam2](/static/image/maixcam2_front_back.png)
 
 
 基础资料:[MaixCAM2 介绍和资料](https://wiki.sipeed.com/hardware/zh/maixcam/maixcam2.html)
@@ -91,16 +93,6 @@ title: MaixCAM MaixPy 快速开始
 
 >! 注意，目前只支持 MaixCAM 系列开发板，其它同型号芯片的开发板均不支持，包括 Sipeed 的同型号芯片开发板，请注意不要买错造成不必要的时间和金钱浪费。
 
-
-## 开始上手
-
-请选择对应平台的文档进行操作：
-
-|硬件平台|上手文档|
-|-|-|
-|MaixCAM Lite|[快速开始MaixCAM（无屏幕版本）](./README_no_screen.md)|
-|MaixCAM/MaixCAM Pro|[快速开始MaixCAM](./README_MaixCAM.md)|
-|MaixCAM2|[快速开始MaixCAM2](./README_MaixCAM2.md)|
 
 ## 下一步
 

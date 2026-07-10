@@ -25,7 +25,7 @@ TODO
 
 ### 实现寻线功能
 
-使用`image`模块的`get_regression`可以快速寻找到直线，详情见[寻找直线](./line_tracking.md)
+使用`image`模块的`get_regression`可以快速寻找到直线，详情见[寻找直线](../vision/line_tracking.md)
 
 代码实现：
 
