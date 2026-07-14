@@ -31,12 +31,11 @@ def is_in_button(x, y, btn_pos):
     return x > btn_pos[0] and x < btn_pos[0] + btn_pos[2] and y > btn_pos[1] and y < btn_pos[1] + btn_pos[3]
 
 def on_clicked(x, y):
-    global img
     if is_in_button(x, y, exit_btn_pos):
         app.set_exit_flag(True)
     elif is_in_button(x, y, clear_btn_pos):
-        img = image.Image(disp.width(), disp.height())
-        draw_btns(img)
+        img.clear()       
+        draw_btns(img)    
 
 draw_btns(img)
 while not app.need_exit():
@@ -55,3 +54,4 @@ while not app.need_exit():
             pressed_already = False
             on_clicked(x, y)
     disp.show(img)
+
