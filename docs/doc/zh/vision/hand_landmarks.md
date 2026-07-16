@@ -24,7 +24,7 @@ update:
 
 效果图如下：
 
-<img src="../../assets/hands_landmarks.jpg" style="max-height:24rem">
+![手部关键点检测效果](../../assets/hands_landmarks.jpg)
 
 效果视频：
 <video playsinline controls autoplay loop muted preload src="/static/video/hands_landmarks.mp4" type="video/mp4">

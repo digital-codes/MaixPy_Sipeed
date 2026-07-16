@@ -8,6 +8,14 @@ title: MaixCAM MaixP Where to Find Models and Datasets
 
 Visit the [MaixHub Model Library](https://maixhub.com/model/zoo) and filter by the corresponding hardware platform to find suitable models.
 
+If you only want to verify that the workflow works, start with a built-in model. The system usually includes common models in `/root/models`, so you can reference the corresponding `.mud` file directly in your code without downloading anything.
+
+For more models, open [MaixHub Model Zoo](https://maixhub.com/model/zoo?platform=maixcam2), filter by the MaixCAM2 platform, and download a model package. After downloading, check whether it contains:
+
+- `.mud`: the model description file. MaixPy code usually loads this file.
+- `.axmodel`: the actual model file that runs on MaixCAM2.
+- Example code or instructions: if the model page provides an example, run that first.
+
 ## What Are Datasets Used For?
 
 First, check the [MaixHub Model Library](https://maixhub.com/model/zoo) to see if there’s a model you need. If not, you can train your own model. Training a model requires a dataset, which provides the data needed for training.

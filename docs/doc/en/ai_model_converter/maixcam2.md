@@ -51,26 +51,65 @@ Just place all three files in the same directory for use.
 
 ## Prepare the ONNX Model
 
-Prepare your ONNX model, and use [https://netron.app/](https://netron.app/) to view it. Ensure its operators are supported by the conversion tool, as listed in the [Pulsar2 Toolchain Documentation](https://pulsar2-docs.readthedocs.io/).
+The goal of this section is to obtain a `.onnx` file that Pulsar2 can read. ONNX usually comes from one of these sources:
 
-For MaixCAM2, refer to the `AX620E` platform section.
+1. **Exported after training**: for example, after training YOLO11 / YOLOv8 and obtaining a `.pt` file, follow the ONNX export section in [Offline Training YOLO Models](../vision/customize_model_yolov8.md). For MaixCAM2, use a fixed input size such as `640x480` or `320x240`; do not use dynamic input shapes.
+2. **Exported from another framework**: for example, PyTorch or TensorFlow. Make sure the exported ONNX has a fixed input shape and can be opened in Netron.
+3. **Provided by a third party**: you can start from the ONNX file directly, but you need to confirm that the license allows usage and that the model structure is suitable for MaixCAM2.
+
+If `.mud` and `.axmodel` files are already available, the model has already been converted for MaixCAM2 and can be deployed directly. This conversion flow is not required.
+
+Place the ONNX file in a separate working directory and name it `model.onnx`. Then open it with [Netron](https://netron.app/) and record the following information:
+
+| Item | Verification method | Subsequent use |
+| --- | --- | --- |
+| Input node name | Check the input node area in Netron; a common name is `images` | Input parameter for the ONNX extraction command and `tensor_name` in `config.json` |
+| Input shape | Check the input node shape in Netron, for example `1x3x480x640` | Used to confirm that export size and MaixPy runtime input size match |
+| Candidate output nodes | Check the final output nodes before post-processing | Output parameters for the ONNX extraction command and `output_processors` in `config.json` |
+
+Also confirm that the model operators are supported by Pulsar2. MaixCAM2 corresponds to the `AX620E` platform in Pulsar2. If conversion reports an unsupported operator, adjust the model structure during training/export, or use a model structure already supported by MaixPy.
 
 ## Find Appropriate Quantization Output Nodes
 
-Most models have post-processing nodes handled by the CPU. These can affect quantization accuracy and cause failure, so we separate them.
+The goal of this section is to generate `export.onnx`, which is used by the conversion command later.
 
-Example: `YOLOv5`
+Many detection models contain post-processing nodes at the end of the ONNX graph. These nodes are usually better handled by CPU code. Quantizing the full ONNX may increase quantization error or cause conversion failure, so first choose suitable output nodes and extract a smaller ONNX.
 
-![](../../assets/yolov5s_onnx.jpg)
+Use the following table to select output nodes for common model types. For the basis of the YOLO node selection, see [Offline Training YOLO Models - Output Node Selection](../vision/customize_model_yolov8.md). For classification model trimming principles, see [ONNX Node Trimming Tutorial](./onnx_export.md).
 
-Here we see three `conv` layers. Post-conv computations are handled by the CPU. Thus, we set these three `conv` outputs as model outputs:
-`/model.24/m.0/Conv_output_0,/model.24/m.1/Conv_output_0,/model.24/m.2/Conv_output_0`.
+| Model type | Recommended output node choice | Next step |
+| --- | --- | --- |
+| YOLO11 / YOLOv8 detection | For MaixCAM2, use the `/model.xx/Concat...` output nodes and leave decoding / NMS to MaixPy post-processing | Use the common node table below |
+| YOLO11 / YOLOv8 pose / seg / obb | These models have more output nodes | Use the MaixCAM2 scheme in [Offline Training YOLO Models](../vision/customize_model_yolov8.md) |
+| Classification model | Use the final classification output; if the graph ends with `softmax`, use the output before `softmax` | Record that node name |
 
-For YOLO11/YOLOv8, see [Offline Training YOLO11/YOLOv8](../vision/customize_model_yolov8.md).
+Common MaixCAM2 output nodes for YOLO detection:
 
-For classification models, the final output is usually enough. If there’s a `softmax`, it’s recommended to exclude it and take the output before `softmax`:
+| Model | Recommended output nodes |
+| --- | --- |
+| YOLOv8 detection | `/model.22/Concat_1_output_0`<br>`/model.22/Concat_2_output_0`<br>`/model.22/Concat_3_output_0` |
+| YOLO11 detection | `/model.23/Concat_output_0`<br>`/model.23/Concat_1_output_0`<br>`/model.23/Concat_2_output_0` |
 
-![](../../assets/mobilenet_top.png)
+If your node names are not exactly the same, use Netron to find nodes at the same position and with the same meaning instead of copying the names mechanically. After confirming the input node name and output node names, install the tools needed for extraction and simplification:
+
+```bash
+pip install onnx onnxsim
+```
+
+Then run:
+
+```bash
+python -c "import onnx,sys; onnx.utils.extract_model(sys.argv[1], sys.argv[2], [s.strip() for s in sys.argv[3].split(',')], [s.strip() for s in sys.argv[4].split(',')])" model.onnx tmp_extract.onnx "images" "/model.23/Concat_output_0,/model.23/Concat_1_output_0,/model.23/Concat_2_output_0"
+onnxsim tmp_extract.onnx export.onnx
+```
+
+Replace:
+
+* `model.onnx` with your original ONNX file name.
+* `"images"` with the input node name shown in Netron.
+* `"/model.23/Concat_output_0,...` with your selected output node names, separated by English commas.
+
+After the command succeeds, `export.onnx` is generated in the current directory. All later `--input ./export.onnx` commands refer to this extracted and simplified ONNX file.
 
 ## Install the Model Conversion Environment
 
@@ -78,7 +117,11 @@ Follow the [Pulsar2 Toolchain Documentation](https://pulsar2-docs.readthedocs.io
 
 ### Install Docker
 
-Follow [Docker's official documentation](https://docs.docker.com/engine/install/ubuntu/).
+Follow [Docker's official documentation](https://docs.docker.com/engine/install/ubuntu/). After installation, run the following command. If it prints a version number, Docker is ready:
+
+```shell
+docker --version
+```
 
 Example:
 
@@ -94,94 +137,221 @@ sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io
 ```
 
-### Pull the Docker Image
+### Load the Docker Image
 
-Follow the instructions in the [Pulsar2 Documentation](https://pulsar2-docs.readthedocs.io/) or download the latest version from [Hugging Face](https://huggingface.co/AXERA-TECH/Pulsar2/tree/main).
+Follow the instructions in the [Pulsar2 Documentation](https://pulsar2-docs.readthedocs.io/), or download the image from [Hugging Face](https://huggingface.co/AXERA-TECH/Pulsar2/tree/main) / [ModelScope](https://www.modelscope.cn/models/AXERA-TECH/Pulsar2/files).
 
-After downloading, load it with:
+After downloading `pulsar2_vxx.tar.gz`, load it with:
 
 ```shell
 docker load -i pulsar2_vxx.tar.gz
 ```
 
+Then check the actual image name:
+
+```shell
+docker images | grep pulsar2
+```
+
 ### Run the Container
 
-```shell
-docker run -it --privileged --name pulsar2 -v /home/$USER/data:/home/$USER/data pulsar2
-```
-
-This runs a container named `pulsar2` and mounts `~/data` into the container.
-
-To start next time:
+Enter your model conversion work directory and run the container. Replace `pulsar2:6.0` with the image name shown by `docker images` if yours is different:
 
 ```shell
-docker start pulsar2 && docker attach pulsar2
+mkdir -p ~/maixcam2_convert
+cd ~/maixcam2_convert
+docker run -it --net host --rm -v "$PWD":/data -w /data pulsar2:6.0
 ```
 
-Run `pulsar2` inside the container to view the help message.
+Inside the container, the current directory is `/data`. Put `export.onnx`, `datasets/train.tar`, and `config/*.json` in this directory for the following steps.
 
 ## Convert the Model
 
-Refer to Pulsar2 documentation. The main command:
+Before running `pulsar2 build`, prepare these files in the working directory:
+
+| File | Purpose |
+| --- | --- |
+| `export.onnx` | The extracted and simplified ONNX from the previous step |
+| `datasets/train.tar` | Calibration image package for INT8 quantization |
+| `config/yolo11n.npu.json` | Configuration for the full NPU model |
+| `config/yolo11n.vnpu.json` | Configuration for the virtual NPU model |
+
+To create the calibration package, put 20 to 100 representative real-scene images into `datasets/train_images`, then run:
+
+```bash
+mkdir -p datasets/train_images
+# Put 20 to 100 representative images into datasets/train_images first.
+tar -cf datasets/train.tar -C datasets/train_images .
+```
+
+The main Pulsar2 command is:
 
 ```shell
 pulsar2 build --target_hardware AX620E --input onnx_path --output_dir out_dir --config config_path
 ```
 
-Key components are the `onnx` model and the `config` JSON file. Extract output nodes using this script `extract_onnx.py`:
+The parameters should be filled as follows:
 
-```python
-# same as original code
-```
+| Parameter | Value |
+| --- | --- |
+| `--target_hardware AX620E` | Fixed for MaixCAM2 |
+| `--input onnx_path` | The extracted ONNX, for example `./export.onnx` |
+| `--output_dir out_dir` | Temporary output directory, for example `./tmp` |
+| `--config config_path` | Conversion config file, for example `./config/yolo11n.npu.json` |
 
-Use `onnxsim` to simplify the model.
-
-Example `config.json` for YOLO11:
+For YOLO11 detection, create `config/yolo11n.npu.json` first. The important fields are:
 
 ```json
-# same as original
+{
+  "model_type": "ONNX",
+  "npu_mode": "NPU2",
+  "quant": {
+    "input_configs": [
+      {
+        "tensor_name": "images",
+        "calibration_dataset": "datasets/train.tar",
+        "calibration_size": 64,
+        "calibration_mean": [0, 0, 0],
+        "calibration_std": [255, 255, 255]
+      }
+    ],
+    "calibration_method": "MinMax",
+    "precision_analysis": true
+  },
+  "input_processors": [
+    {
+      "tensor_name": "images",
+      "tensor_format": "RGB",
+      "tensor_layout": "NCHW",
+      "src_format": "RGB",
+      "src_dtype": "U8",
+      "src_layout": "NHWC",
+      "csc_mode": "NoCSC"
+    }
+  ],
+  "output_processors": [
+    {
+      "tensor_name": "/model.23/Concat_output_0",
+      "dst_perm": [0, 2, 3, 1]
+    },
+    {
+      "tensor_name": "/model.23/Concat_1_output_0",
+      "dst_perm": [0, 2, 3, 1]
+    },
+    {
+      "tensor_name": "/model.23/Concat_2_output_0",
+      "dst_perm": [0, 2, 3, 1]
+    }
+  ],
+  "compiler": {
+    "check": 3,
+    "check_mode": "CheckOutput",
+    "check_cosine_simularity": 0.9
+  }
+}
 ```
 
-Note:
-
-* `calibration_dataset`: Calibration data, sample some images from your dataset.
-* `npu_mode`: Set to `NPU2` to use full NPU. Set to `NPU1` if using AI-ISP (divides NPU for two purposes).
-
-Convert both modes for flexibility (`model_npu` and `model_vnpu` in MUD file).
-
-## Write Conversion Scripts
-
-Helpful scripts:
-
-* `extract_onnx.py`: Extract ONNX submodel (see above).
-* `gen_cali_images_tar.py`: Package image dataset into `tar` file for calibration.
-
-```python
-# same as original code
-```
-
-* `convert.sh`: One-click conversion for both NPU and VNPU models.
+Then copy it to `config/yolo11n.vnpu.json` and change only:
 
 ```shell
-# same as original script
+cp config/yolo11n.npu.json config/yolo11n.vnpu.json
 ```
 
-After successful execution, you'll get `*_npu.axmodel` and `*_vnpu.axmodel`.
+```json
+"npu_mode": "NPU1"
+```
+
+`NPU2` uses the full NPU and should be written to `model_npu` in the `.mud` file. `NPU1` leaves resources for AI-ISP / virtual NPU usage and should be written to `model_vnpu`.
+
+Run the conversion commands:
+
+```shell
+pulsar2 build --target_hardware AX620E --input ./export.onnx --output_dir ./tmp --config ./config/yolo11n.npu.json
+mkdir -p out
+cp tmp/compiled.axmodel out/yolo11n_npu.axmodel
+
+rm -rf tmp
+pulsar2 build --target_hardware AX620E --input ./export.onnx --output_dir ./tmp --config ./config/yolo11n.vnpu.json
+cp tmp/compiled.axmodel out/yolo11n_vnpu.axmodel
+```
+
+After successful execution, `out/` contains `yolo11n_npu.axmodel` and `yolo11n_vnpu.axmodel`.
 
 ## Write the `mud` File
 
-Edit as per your model. For YOLO11:
+Create `out/yolo11n.mud` in the same directory as the two `.axmodel` files:
 
 ```ini
-# same as previous MUD example
+[basic]
+type = axmodel
+model_npu  = yolo11n_npu.axmodel
+model_vnpu = yolo11n_vnpu.axmodel
+
+[extra]
+model_type = yolo11
+type=detector
+input_type = rgb
+labels = your_label_0,your_label_1,your_label_2
+
+input_cache = true
+output_cache = true
+input_cache_flush = false
+output_cache_inval = true
+
+mean = 0,0,0
+scale = 0.00392156862745098, 0.00392156862745098, 0.00392156862745098
 ```
 
-The `[basic]` section is required. Once set, you can load and run the model using `maix.nn.NN` in `MaixPy` or `MaixCDK`.
+Replace `labels` with the class names used during training, and keep their order exactly the same as the training dataset. The `[basic]` section is required; once it is correct, MaixPy can load the model through the `.mud` file.
 
-If MaixPy doesn't support your model, define your own `extra` fields and write decoding logic. You can either:
+## Deploy to the Device and Verify Quickly
 
-* Use Python in `MaixPy` to load the model via `maix.nn.NN`, run `forward`/`forward_image`, and process the outputs in Python (easier but slower);
-* Or, for better performance and reusable integration, write C++ logic in `MaixCDK`, see [YOLOv5 example](https://github.com/sipeed/MaixCDK/blob/71d5b3980788e6b35514434bd84cd6eeee80d085/components/nn/include/maix_nn_yolov5.hpp).
+MaixPy usually loads the `.mud` file. The `.mud` file then points to the actual `.axmodel` files. The simplest approach is to put them in the same directory, for example:
 
-Once done, consider submitting a PR to `MaixPy` or share your model on [MaixHub](https://maixhub.com/share) to earn rewards ranging from ¥30 to ¥2000!
+```text
+/root/models/my_model.mud
+/root/models/my_model_npu.axmodel
+/root/models/my_model_vnpu.axmodel
+```
 
+Then first confirm that the model can be loaded:
+
+```python
+from maix import nn
+
+model = nn.NN("/root/models/my_model.mud")
+print(model)
+```
+
+If the model type is already supported by MaixPy, prefer the wrapped API. For example, for YOLO, see the [YOLO object detection documentation](../vision/yolov5.md):
+
+```python
+from maix import nn
+
+detector = nn.YOLO11(model="/root/models/yolo11n.mud", dual_buff=True)
+```
+
+## Debug Checklist
+
+If the model cannot be loaded or the result is wrong, check these items first:
+
+1. Whether the `.mud` and `.axmodel` files are in the same directory, and whether `model_npu` and `model_vnpu` in the `.mud` file use the correct file names.
+2. Whether the path used on the device really exists, such as `/root/models/xxx.mud`.
+3. Whether `labels` exactly matches the class count and class order used during training.
+4. Whether `model_type` is supported by MaixPy, such as `yolo11`, `yolov8`, or `classifier`.
+5. Whether input resolution, `mean`, `scale`, and RGB/BGR order match training, export, and conversion settings.
+6. Whether the ONNX output nodes exactly match `output_processors` in `config.json`.
+7. If you are not sure whether the problem is the model or your code, test with a MaixHub model or a built-in model first. After an official model runs correctly, debug your own model.
+
+After these basic checks pass, continue with the specific model documentation or conversion workflow. If this is a model type not yet wrapped by MaixPy, continue with the next section.
+
+## Write Post-processing Code
+
+If the model type is already supported by MaixPy, such as YOLO or a classifier, you usually do not need to write post-processing manually. Use the corresponding MaixPy API directly.
+
+If MaixPy does not yet wrap your model type, implement post-processing according to the model outputs and choose one of these paths:
+
+* **Quick verification**: use `maix.nn.NN` to load the `.mud` file, call `forward` or `forward_image`, and write post-processing in Python. See [Porting a New Model](../pro/customize_model.md) for the full workflow.
+* **Formal integration**: add a model decoding class in `MaixCDK` so both `MaixCDK` and `MaixPy` can use it with better performance. You can refer to the [YOLOv5 source code](https://github.com/sipeed/MaixCDK/blob/71d5b3980788e6b35514434bd84cd6eeee80d085/components/nn/include/maix_nn_yolov5.hpp), add the corresponding `hpp` file, complete the `@maixpy` annotations, and rebuild MaixPy.
+
+After adding support for a new model, you can submit a Pull Request to the main `MaixPy` repository or share your model on [MaixHub](https://maixhub.com/share).

@@ -7,7 +7,6 @@ title: MaixCAM MaixPy Quick Start
         width: 100%;
         display: table;
     }
-
     @media screen and (max-width: 900px){
       #head_links th, #head_links td {
           /* padding: 8px; */
@@ -22,7 +21,7 @@ title: MaixCAM MaixPy Quick Start
 | Resource Summary           | Link                                                                                      |
 | :-------------------------:| :-------------------------------------------------------------------------------------:|
 |  Tutorial Documentation 📖 | [wiki.sipeed.com/maixpy/en/](https://wiki.sipeed.com/maixpy/en/)                                   |
-| Examples and Source Code <img src="/static/image/github-fill.svg" style="height: 1.5em;vertical-align: middle;"> | [github.com/sipeed/MaixPy](https://github.com/sipeed/MaixPy)                               |
+| Examples and Source Code ![GitHub](/static/image/github-fill.svg) | [github.com/sipeed/MaixPy](https://github.com/sipeed/MaixPy)                               |
 |  MaixCAM Hardware 📷 | [wiki.sipeed.com/maixcam](https://wiki.sipeed.com/maixcam) </br> [wiki.sipeed.com/maixcam-pro](https://wiki.sipeed.com/maixcam-pro)  </br>  [wiki.sipeed.com/maixcam2](https://wiki.sipeed.com/maixcam2)|
 |  API Documentation 📚 | [wiki.sipeed.com/maixpy/api/](https://wiki.sipeed.com/maixpy/api/index.html)               |
 | MaixHub App Store 📦      | [maixhub.com/app](https://maixhub.com/app)                                                 |
@@ -42,15 +41,17 @@ title: MaixCAM MaixPy Quick Start
 > For an introduction to MaixPy, please see the [MaixPy official website homepage](../../README.md)
 > Please give the [MaixPy project](https://github.com/sipeed/MaixPy) a Star ⭐️ to encourage us to develop more features if you like MaixPy.
 
+## Choose Your Device First
+
+There are several MaixCAM series products. If this is your first time using one, check the model name on the package, order page, or device enclosure first, then open the corresponding getting-started guide. Choosing the right guide first can save a lot of detours.
+
+| Device Model | Product Image | Getting Started |
+| --- | --- | --- |
+| MaixCAM2 | ![MaixCAM2](/static/image/maixcam2_front_back.png) | [Quick Start MaixCAM2](./README_MaixCAM2.md) |
+| MaixCAM / MaixCAM-Pro | ![MaixCAM / MaixCAM-Pro](/static/image/maixcams.png) | [Quick Start MaixCAM](./README_MaixCAM.md) |
+| MaixCAM Lite / screenless version | ![MaixCAM Lite / screenless version](/static/image/maixcam.png) | [Quick Start MaixCAM screenless version](./README_no_screen.md) |
+
 <iframe style="width:100%;min-height:30em" src="https://www.youtube.com/embed/qV1lw0UVUYI?si=g3xUX5v3iT9r7RxJ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-## Quick Preview
-
-<div align="center"><span style="color: #c33d45; font-weight: bold;">MaixCAM2(The Upgraded Version of MaixCAM~)</span></div>
-<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115547387727388&bvid=BV1veCTBsEZa&cid=33995951833&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
-
-<div align="center"><span style="color: #c33d45; font-weight: bold;">MaixCAM</span></div>
-<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=113485669204279&bvid=BV1ncmRYmEDv&cid=26768769718&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" class="biliiframe"></iframe>
 
 ## Before Start
 
@@ -61,7 +62,7 @@ title: MaixCAM MaixPy Quick Start
 
 ## Get a MaixCAM/MaixCAM2 Device
 
-![maixcam2](https://wiki.sipeed.com/static/image/maixcam2_front_back.png)
+![maixcam2](/static/image/maixcam2_front_back.png)
 
 
 Basic Information:[MaixCAM2 Introduction & Resources](https://wiki.sipeed.com/hardware/en/maixcam/maixcam2.html)
@@ -81,17 +82,6 @@ Purchase Links:[Sipeed Taobao](https://item.taobao.com/item.htm?id=846226367137)
 <br>
 
 >! Note that currently only the MaixCAM development board is supported. Other development boards with the same chip are not supported, including Sipeed's development boards with the same chip. Please be careful not to purchase the wrong board, which could result in unnecessary waste of time and money.
-
-
-## Getting Started
-
-Please select the documentation corresponding to your hardware platform to proceed:
-
-| Hardware Platform | Getting Started Guide |
-|-|-|
-|MaixCAM Lite|[Quick Start MaixCAM(Screenless Version)](./README_no_screen.md)|
-|MaixCAM/MaixCAM Pro|[Quick Start MaixCAM](./README_MaixCAM.md)|
-|MaixCAM2|[Quick Start MaixCAM2](./README_MaixCAM2.md)|
 
  ## Next Steps
 

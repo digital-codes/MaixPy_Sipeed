@@ -17,7 +17,13 @@ Visit the [MaixVision homepage](https://wiki.sipeed.com/maixvision) to download.
 
 ## Using MaixPy Programming and Online Running
 
-Follow the steps in [Quick Start](../README.md) to connect your device, and you can easily use MaixPy programming and run it online.
+Before using MaixVision for programming, complete the device connection steps in the quick start guide that matches your device:
+
+* [Quick Start MaixCAM2](../README_MaixCAM2.html#Preparing-to-Connect-Computer-and-Device)
+* [Quick Start MaixCAM](../README_MaixCAM.html#Preparing-to-Connect-Computer-and-Device)
+* [Quick Start MaixCAM screenless version](../README_no_screen.html#Preparing-to-Connect-the-Computer-and-Device)
+
+After the device is connected, you can use MaixVision for MaixPy programming and online running.
 
 ## Real-time Image Preview
 
@@ -181,4 +187,3 @@ Of course, you can also use third-party shell tools. For example, use your syste
 ## Using Graphical Block Programming
 
 Under development, please stay tuned.
-

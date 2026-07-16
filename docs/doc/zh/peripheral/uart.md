@@ -334,18 +334,18 @@ print(b)
 
 ### 目录
 
-1. [快速排查流程图](#1-快速排查流程图)
-2. [问题分类排查](#2-问题分类排查)
-   - [完全无法通信（收发均无数据）](#21-完全无法通信收发均无数据)
-   - [能发不能收](#22-能发不能收)
-   - [能收不能发](#23-能收不能发)
-   - [收到乱码](#24-收到乱码)
-   - [数据丢失或不完整](#25-数据丢失或不完整)
-   - [USB 口相关问题](#26-usb-口相关问题)
-   - [开机异常问题](#27-开机异常问题)
-3. [引脚与串口映射速查表](#3-引脚与串口映射速查表)
-4. [代码模板与示例](#4-代码模板与示例)
-5. [FAQ 快问快答](#5-faq-快问快答)
+1. [快速排查流程图](#快速排查流程图)
+2. [问题分类排查](#问题分类排查)
+   - [完全无法通信（收发均无数据）](#完全无法通信（收发均无数据）)
+   - [能发不能收](#能发不能收)
+   - [能收不能发](#能收不能发)
+   - [收到乱码](#收到乱码)
+   - [数据丢失或不完整](#数据丢失或不完整)
+   - [USB 口相关问题](#USB-口相关问题)
+   - [开机异常问题](#开机异常问题)
+3. [引脚与串口映射速查表](#引脚与串口映射速查表-MaixCAM-/-MaixCAM-Pro)
+4. [代码模板与示例](#代码模板与示例)
+5. [FAQ 快问快答](#FAQ-快问快答)
 
 ### 快速排查流程图
 
@@ -550,6 +550,31 @@ MaixCAM / MaixCAM-Pro 的 **UART0** 有两个特殊限制：
 | UART3 | — | — | `/dev/ttyS3` | — |
 | UART4 | A21 | A22 | `/dev/ttyS4` | 板上默认引脚 |
 
+### 代码模板与示例
+
+```python
+from maix import uart, pinmap, err
+
+# 示例：配置非默认 UART 引脚
+err.check_raise(pinmap.set_pin_function("A19", "UART1_TX"), "Failed to set TX")
+err.check_raise(pinmap.set_pin_function("A18", "UART1_RX"), "Failed to set RX")
+
+serial = uart.UART("/dev/ttyS1", 115200)
+serial.write_str("Hello MaixPy")
+```
+
+```python
+from maix import uart, app, time
+
+serial = uart.UART("/dev/ttyS0", 115200)
+
+while not app.need_exit():
+    data = serial.read()
+    if data:
+        print("收到:", data)
+    time.sleep_ms(1)
+```
+
 ### FAQ 快问快答
 
 | # | 问题 | 回答 |
@@ -564,7 +589,6 @@ MaixCAM / MaixCAM-Pro 的 **UART0** 有两个特殊限制：
 | 8 | 串口0开机打印的乱码是什么？ | 那是系统启动日志，到 `serial ready` 为止。单片机端需丢弃这部分数据。 |
 | 9 | 接了电平转换板但无法开机？ | 检查 UART0 TX（A16）是否被默认拉低，芯片特性：TX 拉低 = 无法开机。保持浮空或使用电平转换芯片。 |
 | 10 | 发送中文出现乱码？ | 确保发送时 `encode("utf-8")`，接收端也要用 UTF-8 解码。 |
-
 
 
 

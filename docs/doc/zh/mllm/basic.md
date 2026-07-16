@@ -158,7 +158,7 @@ update:
 
    > 注：
    >
-   > 1. 建议通过USB网口上传模型， 速度更快。USB网口IP的获取方法见[有线连接](../README_MaixCAM2.md###准备连接电脑和设备)
+   > 1. 建议通过USB网口上传模型， 速度更快。USB网口IP的获取方法见[有线连接](../README_MaixCAM2.html#准备连接电脑和设备)
 
    ```shell
    scp -r lcm-lora-sdv1-5-maixcam2/lcm-lora-sdv1-5-maixcam2 root@192.168.10.100:/root/models

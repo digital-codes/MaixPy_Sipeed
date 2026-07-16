@@ -6,79 +6,155 @@ title: Convert an ONNX Model to a Model Usable by MaixCAM MaixPy (MUD)
 
 ## Introduction
 
-A model trained on a PC cannot be used directly on MaixCAM, because MaixCAM has limited hardware performance. In most cases, we need to apply `INT8` quantization to reduce computation and convert the model into a format supported by MaixCAM.
-
-This document explains how to convert an ONNX model into a model that MaixCAM can use, namely a **MUD model**.
+A model trained on a PC cannot be used directly on MaixCAM / MaixCAM-Pro. It must first be converted to the `.cvimodel` format supported by the device, with a matching `.mud` model description file. This page uses a YOLOv8 detection model as an example and walks through the complete ONNX-to-MaixCAM conversion flow.
 
 ## Model File Formats Supported by MaixCAM
 
-MUD (**Model Universal Description** file) is a model description format supported by MaixPy. It is used to unify model files across different platforms, making MaixPy code more portable. It is essentially a plain-text file in `ini` format and can be edited with a text editor.
+MUD (Model Universal Description) is a model description file supported by MaixPy. It unifies model loading across different platforms. It is essentially a plain-text `ini` file and can be edited with a text editor.
 
-A MUD file is usually accompanied by one or more actual model files. For example, on MaixCAM, the actual model file is in `.cvimodel` format, while the MUD file provides descriptive metadata for it.
+For MaixCAM / MaixCAM-Pro, the actual model file is `.cvimodel`, while the `.mud` file describes the model path, model type, preprocessing parameters, and label list. A common file pair is:
+
+```text
+yolov8n.mud
+yolov8n_int8.cvimodel
+```
+
+Place the `.mud` and `.cvimodel` files in the same directory to avoid path mistakes.
 
 ## Prepare the ONNX Model
 
-Prepare your ONNX model, then open it in [https://netron.app/](https://netron.app/) to verify that the operators used in your model are supported by the conversion tool. The supported operator list can be found in the **CVITEK_TPU_SDK Development Guide.pdf** from the [Sophgo TPU SDK](https://developer.sophgo.com/thread/473.html).
+The goal of this section is to obtain a `.onnx` file that `tpu-mlir` can read. ONNX usually comes from one of these sources:
 
-## Find Suitable Quantized Output Nodes
-[See detailed reference here](./onnx_export.md)
+1. **Exported after training**: for example, after training YOLOv8 / YOLO11 and obtaining a `.pt` file, follow the ONNX export section in [Offline Training YOLO Models](../vision/customize_model_yolov8.md). MaixCAM commonly uses `320x224`; use a fixed input size instead of dynamic input shapes.
+2. **Exported from another framework**: for example, PyTorch or TensorFlow. Make sure the exported ONNX has a fixed input shape and can be opened in Netron.
+3. **Provided by a third party**: you can start from the ONNX file directly, but you need to confirm that the license allows usage and that the model structure is suitable for MaixCAM.
 
-Assume the cropped ONNX file you obtained is named `export.onnx`.
+If `.mud` and `.cvimodel` files are already available, the model has already been converted for MaixCAM and can be deployed directly. This conversion flow is not required.
+
+Place the ONNX file in a separate working directory and name it `model.onnx`. Then open it with [Netron](https://netron.app/) and record the following information:
+
+| Item | Verification method | Subsequent use |
+| --- | --- | --- |
+| Input node name | Check the input node area in Netron; a common name is `images` | Input parameter for the ONNX extraction command |
+| Input shape | Check the input node shape in Netron, for example `1x3x224x320` | `--input_shapes` parameter in `model_transform.py` |
+| Candidate output nodes | Check the final output nodes before post-processing | Output parameters for the ONNX extraction command and `--output_names` in `model_transform.py` |
+
+Also confirm that the model operators are supported by `tpu-mlir`. MaixCAM uses the `cv181x` processor. If conversion reports an unsupported operator, adjust the model structure during training/export, or use a model structure already supported by MaixPy.
+
+## Find Suitable Quantization Output Nodes
+
+The goal of this section is to generate `export.onnx`, which is used by the conversion command later.
+
+Many detection models contain post-processing nodes at the end of the ONNX graph. These nodes are usually better handled by CPU code. Quantizing the full ONNX may increase quantization error or cause conversion failure, so first choose suitable output nodes and extract a smaller ONNX.
+
+Use the following table to select output nodes for common model types. For the basis of the YOLO node selection, see [Offline Training YOLO Models - Output Node Selection](../vision/customize_model_yolov8.md). For YOLOv5 and classification model trimming principles, see [ONNX Node Trimming Tutorial](./onnx_export.md).
+
+| Model type | Recommended output node choice | Next step |
+| --- | --- | --- |
+| YOLOv8 detection | For MaixCAM, use `/model.22/dfl/conv/Conv_output_0` and `/model.22/Sigmoid_output_0` | Copy the node names and extract ONNX |
+| YOLO11 detection | For MaixCAM, use `/model.23/dfl/conv/Conv_output_0` and `/model.23/Sigmoid_output_0` | Copy the node names and extract ONNX |
+| YOLOv5 detection | Commonly uses three detection head outputs, such as `/model.24/m.0/Conv_output_0`, `/model.24/m.1/Conv_output_0`, `/model.24/m.2/Conv_output_0` | Copy the node names and extract ONNX |
+| pose / seg / obb models | These models have more output nodes | Use the MaixCAM scheme in [Offline Training YOLO Models](../vision/customize_model_yolov8.md) |
+| Classification model | Use the final classification output; if the graph ends with `softmax`, use the output before `softmax` | Record that node name |
+
+If your node names are not exactly the same, use Netron to find nodes at the same position and with the same meaning instead of copying the names mechanically. After confirming the input node name and output node names, install the tools needed for extraction and simplification:
+
+```bash
+pip install onnx onnxsim
+```
+
+For a YOLOv8 detection model, run:
+
+```bash
+python -c "import onnx,sys; onnx.utils.extract_model(sys.argv[1], sys.argv[2], [s.strip() for s in sys.argv[3].split(',')], [s.strip() for s in sys.argv[4].split(',')])" model.onnx tmp_extract.onnx "images" "/model.22/dfl/conv/Conv_output_0,/model.22/Sigmoid_output_0"
+onnxsim tmp_extract.onnx export.onnx
+```
+
+Replace:
+
+* `model.onnx` with your original ONNX file name.
+* `"images"` with the input node name shown in Netron.
+* `"/model.22/dfl/conv/Conv_output_0,...` with your selected output node names, separated by English commas.
+
+After the command succeeds, `export.onnx` is generated in the current directory. All later `--model_def ./export.onnx` commands refer to this extracted and simplified ONNX file. For a more complete extraction explanation, see [ONNX Node Extraction Tutorial](./onnx_export.md).
 
 ## Install the Model Conversion Environment
 
-Model conversion uses Sophgo's [https://github.com/sophgo/tpu-mlir](https://github.com/sophgo/tpu-mlir). We recommend installing it in a Docker environment to avoid host environment incompatibilities. If you are not familiar with Docker, you can think of it as something similar to a virtual machine.
+MaixCAM model conversion uses Sophgo [tpu-mlir](https://github.com/sophgo/tpu-mlir). Use Docker to avoid host environment conflicts.
 
-### Pull the Docker Image
+If Docker is not installed, follow [Docker's official documentation](https://docs.docker.com/engine/install/ubuntu/). After installation, run the following command. If it prints a version number, Docker is ready:
+
+```shell
+docker --version
+```
+
+Then pull the conversion image:
 
 ```shell
 docker pull sophgo/tpuc_dev:latest
 ```
 
-If pulling the Docker image fails, you can download it this way instead:
+If pulling the image fails, download and load the image archive according to the official tpu-mlir instructions:
 
 ```shell
 wget https://sophon-file.sophon.cn/sophon-prod-s3/drive/24/06/14/12/sophgo-tpuc_dev-v3.2_191a433358ad.tar.gz
 docker load -i sophgo-tpuc_dev-v3.2_191a433358ad.tar.gz
 ```
 
-This method is referenced from the [official tpu-mlir Docker environment setup](https://github.com/sophgo/tpu-mlir/blob/master/README_cn.md).
-
-You can also configure a domestic mirror in China. You may search for solutions yourself or refer to [Docker proxy setup and domestic mirror acceleration configuration](https://neucrack.com/p/286).
-
-### Run the Container
+Then check the actual image name:
 
 ```shell
-docker run --privileged --name tpu-env -v ./:/workspace -it sophgo/tpuc_dev:v3.2
+docker images | grep tpuc
 ```
 
-First, create a container named `tpu-env`, and mount the current directory to `/workspace` inside the container. This allows file sharing between the host and the container. Please place `export.onnx` in the current directory.
-
-To start the container next time, use:
+Enter your model conversion work directory and run the container:
 
 ```shell
-docker start tpu-env && docker attach tpu-env
+mkdir -p ~/maixcam_convert
+cd ~/maixcam_convert
+docker run --privileged --rm -it -v "$PWD":/workspace -w /workspace sophgo/tpuc_dev:latest
 ```
 
-### Install tpu-mlir
+If your image name is not `sophgo/tpuc_dev:latest`, replace it with the actual name shown by `docker images`. Inside the container, the current directory is `/workspace`. Put `export.onnx`, the test image, and calibration images in this directory for the following steps.
+
+Install and check `tpu-mlir` inside the container:
 
 ```shell
 pip install tpu_mlir
+model_transform.py --help
 ```
 
-After that, **directly type** `model_transform.py` inside the container and press Enter. If it prints the help information, the installation was successful.
+If `model_transform.py --help` prints the help message, the environment is ready.
 
 ## Convert the ONNX Model to cvimodel
 
-Model conversion mainly uses two commands: `model_transform.py` and `model_deploy.py`. Below is a YOLOv5s example. For other models, adjust the file paths accordingly. **Pay attention to the order of execution.**
+Before conversion, prepare these files in the working directory:
 
-`Step 1`
+```text
+.
+├── export.onnx
+├── test.jpg
+└── images/
+    ├── 0001.jpg
+    ├── 0002.jpg
+    └── ...
+```
 
-> Note whether the paths for `--model_def`, `--test_result`, `--mlir`, and `--test_input` are consistent with the paths used later. For the other parameters, refer to the table below.
+| File | How to prepare it | Purpose |
+| --- | --- | --- |
+| `export.onnx` | Generated by extracting and simplifying ONNX in the previous step | Input model for `model_transform.py` |
+| `test.jpg` | Any test image that matches the model scenario | Used to compare ONNX and MLIR outputs during conversion |
+| `images/` | 20 to 200 representative real-scene images | Calibration dataset for INT8 quantization |
+
+Images closer to the actual deployment scene usually produce more stable INT8 results.
+
+### Generate the MLIR Intermediate File
+
+For a YOLOv8 detection model, run `model_transform.py` first:
 
 ```bash
 model_transform.py \
---model_name yolov5s \
+--model_name yolov8n \
 --model_def ./export.onnx \
 --input_shapes [[1,3,224,320]] \
 --mean "0,0,0" \
@@ -86,86 +162,80 @@ model_transform.py \
 --keep_aspect_ratio \
 --pixel_format rgb \
 --channel_format nchw \
---output_names "/model.24/m.0/Conv_output_0,/model.24/m.1/Conv_output_0,/model.24/m.2/Conv_output_0" \
---test_input ./zidane.jpg \
---test_result yolov5s_top_outputs.npz \
+--output_names "/model.22/dfl/conv/Conv_output_0,/model.22/Sigmoid_output_0" \
+--test_input ./test.jpg \
+--test_result yolov8n_top_outputs.npz \
 --tolerance 0.99,0.99 \
---mlir yolov5s.mlir
+--mlir yolov8n.mlir
 ```
 
-| Key Parameter | Meaning | Description / Recommendation | Example |
-|---|---|---|---|
-| `output_names` | Output names of output nodes | These are the output node names mentioned earlier. They must match the actual output names after model export. | `--output_names "output0"` |
-| `mean, scale` | Preprocessing used during training | For example, official YOLOv5 preprocessing usually normalizes the 3 RGB channels. By default, you can think of it as `mean=0`, `std=255`, meaning the image pixel values are normalized to a smaller range, so `scale=1/std`. Modify these according to the actual preprocessing of your own model. | `--mean "0,0,0"`，`--scale "0.00392156862745098,0.00392156862745098,0.00392156862745098"` |
-| `test_input` | Image used for testing during conversion | For example, `../dog.jpg` is used here, so when actually converting the model, the corresponding test image should be placed near the script directory. Replace it with your own test image according to your model. | `--test_input ./zidane.jpg` |
-| `tolerance` | Allowed error before and after quantization | If conversion reports an error saying the error value exceeds this threshold, it means the converted model may differ too much from the ONNX model. If acceptable, you may increase this threshold to allow conversion to pass. However, in most cases, large errors indicate issues in model structure or post-processing, and the model should be optimized with removable post-processing eliminated as much as possible. | `--tolerance 0.99,0.99` |
-| `model_def` | The ONNX file after node cropping |  | `--model_def ./export.onnx` |
-| `mlir` | The intermediate MLIR file after conversion |  | `--mlir yolov5s.mlir` |
-| `test_result` | Intermediate file generated by converting `test_input`, used in later steps |  | `--test_result yolov5s_top_outputs.npz ` |
-| `input_shapes` | Input size of the model to be converted | Since the model input image size is fixed, adjust it flexibly according to the image size you plan to use on MaixCAM. This should already be determined during ONNX export. | `--input_shapes [[1,3,224,320]]` |
+After success, you will get `yolov8n.mlir`, `yolov8n_in_f32.npz`, and `yolov8n_top_outputs.npz`. The deploy command uses these files next.
 
-`Step 2`
+Important parameters:
 
-> Note whether the paths for `--model_def`, `--test_result`, `--mlir`, and `--test_input` are consistent with the previous step. For other parameters, refer to the table below.  
-> The first example is the BF16 conversion process, and the second is the INT8 conversion process. INT8 models require an additional calibration step, so make sure to distinguish between them.
+| Parameter | Value |
+| --- | --- |
+| `--model_name` | Model name used for generated intermediate files, such as `yolov8n` |
+| `--model_def` | The extracted ONNX, for example `./export.onnx` |
+| `--input_shapes` | Model input shape in `[N,C,H,W]`, for example `[[1,3,224,320]]` |
+| `--mean` / `--scale` | Preprocessing parameters; keep them consistent with training and export |
+| `--output_names` | ONNX output node names; must match the nodes used when extracting `export.onnx` |
+| `--test_input` | Test image path, such as `./test.jpg` |
+| `--test_result` | Output comparison result used by the next step |
+| `--mlir` | Generated MLIR intermediate file |
 
-`bf16`
+### Generate an INT8 cvimodel
 
-```bash
-# export bf16 model
-#   not use --quant_input, use float32 for easy coding
-model_deploy.py \
---mlir yolov5s.mlir \
---quantize BF16 \
---processor cv181x \
---test_input yolov5s_in_f32.npz \
---test_reference yolov5s_top_outputs.npz \
---model yolov5s_bf16.cvimodel
-```
-
-`int8`
+On MaixCAM, INT8 is usually preferred because it is faster and uses less memory. First generate the calibration table:
 
 ```bash
-#  "calibrate for int8 model"
-# export int8 model
-run_calibration.py yolov5s.mlir \
+run_calibration.py yolov8n.mlir \
 --dataset ./images \
---input_num 1 \
--o yolov5s_cali_table
+--input_num 50 \
+-o yolov8n_cali_table
+```
 
-#  "convert to int8 model"
-# export int8 model
-#    add --quant_input, use int8 for faster processing in maix.nn.NN.forward_image
+`--input_num` is the number of images used for calibration and cannot be larger than the number of images in `images/`. Beginners can start with about 50 real-scene images.
+
+Then generate the `.cvimodel`:
+
+```bash
 model_deploy.py \
---mlir yolov5s.mlir \
+--mlir yolov8n.mlir \
 --quantize INT8 \
 --quant_input \
---calibration_table yolov5s_cali_table \
+--calibration_table yolov8n_cali_table \
 --processor cv181x \
---test_input yolov5s_in_f32.npz \
---test_reference yolov5s_top_outputs.npz \
+--test_input yolov8n_in_f32.npz \
+--test_reference yolov8n_top_outputs.npz \
 --tolerance 0.9,0.6 \
---model yolov5s_int8.cvimodel
+--model yolov8n_int8.cvimodel
 ```
 
-| Key Parameter | Meaning | Description / Recommendation | Example |
-|----------|------|-----------|------|
-| `quantize` | Quantized data type | On MaixCAM, `INT8` models are generally preferred. `BF16` models usually offer higher accuracy, but tend to run slower. Therefore, it is recommended to first try converting to `INT8`; if that fails, or if you need higher accuracy and speed is less important, then consider `BF16`. | `--quantize INT8` / `--quantize BF16` |
-| `dataset`  | Dataset used for quantization | The dataset is usually placed in the same directory as the conversion script, such as the `images` folder in this example. For YOLOv5, images are generally sufficient, and you can select a subset of representative images from the COCO dataset. `--input_num` specifies how many images are actually used and should be less than or equal to the number of images in the `images` directory. | `--dataset ./images` |
-| `mlir`  | MLIR file before conversion | Must match the MLIR file generated by `model_transform.py` | `--mlir yolov5s.mlir` |
-| `test_input`  | NPZ file used for testing | Must match the NPZ file generated by the `test_result` parameter in `model_transform.py` | `--test_input yolov5s_in_f32.npz ` |
-| `model`  | The final generated cvimodel | Put the generated cvimodel into MaixCAM and configure the MUD file in the same directory so it can be loaded through MaixPy | `--model yolov5s_int8.cvimodel` |
+After successful execution, `yolov8n_int8.cvimodel` is generated in the current directory.
+
+If INT8 conversion fails, first check whether the output nodes, input shape, preprocessing parameters, and calibration images are correct. If it still cannot pass, try BF16:
+
+```bash
+model_deploy.py \
+--mlir yolov8n.mlir \
+--quantize BF16 \
+--processor cv181x \
+--test_input yolov8n_in_f32.npz \
+--test_reference yolov8n_top_outputs.npz \
+--model yolov8n_bf16.cvimodel
+```
+
+BF16 usually preserves accuracy more easily, but it is often slower and uses more memory than INT8. Use it mainly for debugging or special accuracy requirements.
 
 ## Write the `mud` File
 
-> Note: the `.mud` file and `.cvimodel` file must be in the same directory.
-
-Here we use a `YOLOv8` model file as an example. There are two files: `yolov8n.mud` and `yolov8n.cvimodel`. The content of the former is:
+The `.mud` and `.cvimodel` files must be in the same directory. For `yolov8n_int8.cvimodel`, create `yolov8n.mud`:
 
 ```ini
 [basic]
 type = cvimodel
-model = yolov8n.cvimodel
+model = yolov8n_int8.cvimodel
 
 [extra]
 model_type = yolov8
@@ -175,36 +245,68 @@ scale = 0.00392156862745098, 0.00392156862745098, 0.00392156862745098
 labels = person, bicycle, car, motorcycle, airplane, bus, train, truck, boat, traffic light, fire hydrant, stop sign, parking meter, bench, bird, cat, dog, horse, sheep, cow, elephant, bear, zebra, giraffe, backpack, umbrella, handbag, tie, suitcase, frisbee, skis, snowboard, sports ball, kite, baseball bat, baseball glove, skateboard, surfboard, tennis racket, bottle, wine glass, cup, fork, knife, spoon, bowl, banana, apple, sandwich, orange, broccoli, carrot, hot dog, pizza, donut, cake, chair, couch, potted plant, bed, dining table, toilet, tv, laptop, mouse, remote, keyboard, cell phone, microwave, oven, toaster, sink, refrigerator, book, clock, vase, scissors, teddy bear, hair drier, toothbrush
 ```
 
-| Item | Description |
-|------|------|
-| Model type | `cvimodel`; for MaixCAM2 it is `axmodel`. |
-| Model path | The `yolov8n.cvimodel` file relative to the `mud` file path. |
-| `mean` / `scale` | Preprocessing parameters. They must match the preprocessing used for model input during training. |
-| `labels` | The list of target categories. Here it corresponds to 80 classes. |
-| File placement | In actual use, place the model file and the `mud` file in the same directory. |
-| What to modify for a custom model | According to your own model, just modify the `labels` in the `mud` file. |
+Modify these fields for your own model:
 
-When actually using this model, just place these two files in the same directory.
+| Parameter | Description |
+| --- | --- |
+| `model` | The `.cvimodel` file name, such as `yolov8n_int8.cvimodel` |
+| `model_type` | Model type supported by MaixPy, such as `yolov5`, `yolov8`, `yolo11`, or `classifier` |
+| `mean` / `scale` | Preprocessing parameters; keep them consistent with training, export, and conversion |
+| `labels` | Class names; the count and order must match the training dataset exactly |
 
-According to your own model, you only need to modify the `labels` in the `mud` file.
+For example, if you trained a digit detector with classes `0` to `9`, write:
 
-The `basic` section specifies the model file type and model file path. These are required parameters. With these parameters, the model can be loaded and run using the `maix.nn.NN` class in `MaixPy` or `MaixCDK`.
+```ini
+labels = 0,1,2,3,4,5,6,7,8,9
+```
 
-The `extra` section is designed according to the needs of different models.
+## Deploy to the Device and Verify Quickly
 
-For example, in this YOLOv5 case, these parameters are designed mainly for preprocessing, post-processing, labels, and so on. For models already supported by `MaixPy`, you can directly download an existing model and modify it. You can also inspect the actual code, for example the [YOLOv5 source code](https://github.com/sipeed/MaixCDK/blob/71d5b3980788e6b35514434bd84cd6eeee80d085/components/nn/include/maix_nn_yolov5.hpp#L73-L223), to see which parameters are used.
+MaixPy usually loads the `.mud` file. The `.mud` file then points to the actual `.cvimodel` file. The simplest approach is to put both files in the same directory:
 
-For example, if you trained a `YOLOv5` model to detect digits `0~9`, then you should change `labels` to `0,1,2,3,4,5,6,7,8,9`. If you did not modify the training code, the other parameters can usually remain unchanged.
+```text
+/root/models/yolov8n.mud
+/root/models/yolov8n_int8.cvimodel
+```
 
-If you need to port a model not yet supported by `MaixPy`, you can define `extra` according to the model's preprocessing and post-processing requirements, and then write the corresponding decoding class. If you do not want to modify the MaixPy source code in C++, you can also load the model with `maix.nn.NN` in MaixPy, then use `forward` or `forward_image` to get the raw outputs and implement post-processing in Python. However, this is less efficient and generally not recommended.
+Then first confirm that the model can be loaded:
+
+```python
+from maix import nn
+
+model = nn.NN("/root/models/yolov8n.mud")
+print(model)
+```
+
+If the model type is already supported by MaixPy, prefer the wrapped API. For example, for YOLO, see the [YOLO object detection documentation](../vision/yolov5.md):
+
+```python
+from maix import nn
+
+detector = nn.YOLOv8(model="/root/models/yolov8n.mud", dual_buff=True)
+```
+
+## Debug Checklist
+
+If the model cannot be loaded or the result is wrong, check these items first:
+
+1. Whether the `.mud` and `.cvimodel` files are in the same directory, and whether `model` in the `.mud` file uses the correct file name.
+2. Whether the path used on the device really exists, such as `/root/models/yolov8n.mud`.
+3. Whether `labels` exactly matches the class count and class order used during training.
+4. Whether `model_type` is supported by MaixPy, such as `yolov5`, `yolov8`, `yolo11`, or `classifier`.
+5. Whether input resolution, `mean`, `scale`, and RGB/BGR order match training, export, and conversion settings.
+6. Whether ONNX output nodes, the extraction command, and `--output_names` in `model_transform.py` are exactly the same.
+7. If you are not sure whether the problem is the model or your code, test with a MaixHub model or a built-in model first. After an official model runs correctly, debug your own model.
+
+After these basic checks pass, continue with the specific model documentation or conversion workflow.
 
 ## Write Post-processing Code
 
-As mentioned in the previous step, if you are just modifying the `mud` file of a model already supported, then you can directly use the corresponding code in `MaixPy` or `MaixCDK` to load it.
+If the model type is already supported by MaixPy, such as YOLO or a classifier, you usually do not need to write post-processing manually. Use the corresponding MaixPy API directly.
 
-If you are supporting a new model, after designing the `mud` file, you need to actually write preprocessing and post-processing. There are two ways:
+If MaixPy does not yet wrap your model type, implement post-processing according to the model outputs:
 
-* Method 1: In MaixPy, use `maix.nn.NN` to load the model, run it with `forward` or `forward_image`, obtain the outputs, and then write post-processing in Python to get the final result.
-* Method 2: In `MaixCDK`, refer to the [YOLOv5 source code](https://github.com/sipeed/MaixCDK/blob/71d5b3980788e6b35514434bd84cd6eeee80d085/components/nn/include/maix_nn_yolov5.hpp), add a new `hpp` file, create a class to handle your model, and modify the `@maixpy` annotations for all functions and classes. After implementation, rebuild the `MaixPy` project, and then you can use the new class in `MaixPy` to run your model.
+* **Quick verification**: use `maix.nn.NN` to load the `.mud` file, call `forward` or `forward_image`, and write post-processing in Python. See [Porting a New Model](../pro/customize_model.md) for the full workflow.
+* **Formal integration**: add a model decoding class in `MaixCDK` so both `MaixCDK` and `MaixPy` can use it with better performance. You can refer to the [YOLOv5 source code](https://github.com/sipeed/MaixCDK/blob/71d5b3980788e6b35514434bd84cd6eeee80d085/components/nn/include/maix_nn_yolov5.hpp), add the corresponding `hpp` file, complete the `@maixpy` annotations, and rebuild MaixPy.
 
-After adding support for a new model, you can also submit the source code as a Pull Request to the main `MaixPy` repository and become a contributor to the `MaixPy` project. You can also share it on [MaixHub](https://maixhub.com/share). Depending on the quality, you may receive a reward ranging from at least `30 RMB` up to `2000 RMB`!
+After adding support for a new model, you can submit a Pull Request to the main `MaixPy` repository or share your model on [MaixHub](https://maixhub.com/share).

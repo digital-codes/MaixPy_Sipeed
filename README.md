@@ -194,6 +194,3 @@ All files in this repository are under the terms of the [Apache License 2.0 Sipe
 * QQ group: 862340358
 * Telegram: [t.me/maixpy](https://t.me/maixpy)
 * Github issues: [github.com/sipeed/maixpy/issues](https://github.com/sipeed/maixpy/issues)
-
-
-

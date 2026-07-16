@@ -200,7 +200,7 @@ ImportError: arg(): could not convert default argument into a Python object (typ
 
 ## 为什么不能显示中文
 
-默认只有英文字体，如果要显示中文，需要更换中文字体，具体请看[基本图像操作 中文支持和自定义字体 部分](./vision/image_ops.md#中文支持和自定义字体)
+默认只有英文字体，如果要显示中文，需要更换中文字体，具体请看[基本图像操作 中文支持和自定义字体 部分](./vision/image_ops.html#中文支持和自定义字体)
 
 
 ## 程序退出并提示 app exit with code: 1, log in /maixapp/tmp/last_run.log

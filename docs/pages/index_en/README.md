@@ -303,7 +303,9 @@ h1 {
 
 <div class="w-full flex flex-col justify-center text-center">
     <div class="flex justify-center">
-        <img src="/static/image/maixpy_banner.png" alt="MaixPy Banner">
+
+![MaixPy Banner](/static/image/maixpy_banner.png)
+
     </div>
     <h1><span>MaixPy (v4)</span></h1>
     <h3>Fast implementation of AI vision and auditory applications</h3>
@@ -332,7 +334,7 @@ English | [中文](../)
 
 <div class="mt-16"></div>
 
-<img class="text-center" src="/static/image/maixcams.png">
+![MaixCAM series](/static/image/maixcams.png)
 
 <div class="mt-6"></div>
 
@@ -431,7 +433,7 @@ No need for AI expertise or expensive training equipment, train models with one 
 
 <div class="mt-3"></div>
 
-<img class="shadow-xl white_border" src="/static/image/maixhub.jpg">
+![MaixHub](/static/image/maixhub.jpg)
 </div>
 <!-- end -->
 
@@ -448,21 +450,27 @@ A detailed performance comparison provided later.
     <div class="flex flex-row w-full">
         <a href="https://wiki.sipeed.com/maixcam2" target="_blank" class="flex flex-row items-center justify-around w-full card_item mask_wrapper item1">
             <div class="item_name">MaixCAM2</div>
-            <img src="https://wiki.sipeed.com/static/image/maixcam2_small.png">
+
+![MaixCAM2](https://wiki.sipeed.com/static/image/maixcam2_small.png)
+
             <div class="mask"></div>
         </a>
     </div>
     <div class="flex flex-row w-full justify-between">
         <div class="flex_center flex-row justify-start w-1/2">
             <a href="https://wiki.sipeed.com/hardware/zh/maixcam/maixcam.html" target="_blank" class="flex_center card_item mask_wrapper item2">
-                <img src="https://wiki.sipeed.com/static/image/maixcam_small.png">
+
+![MaixCAM](https://wiki.sipeed.com/static/image/maixcam_small.png)
+
                 <div class="item_name pt-8">MaixCAM</div>
                 <div class="mask"></div>
             </a>
         </div>
         <div class="flex_center flex-row justify-end w-1/2">
             <a href="https://wiki.sipeed.com/maixcam-pro" target="_blank" class="flex_center card_item mask_wrapper item3">
-                <img src="https://wiki.sipeed.com/static/image/maixcam_pro_small.png">
+
+![MaixCAM-Pro](https://wiki.sipeed.com/static/image/maixcam_pro_small.png)
+
                 <div class="item_name pt-8">MaixCAM-Pro</div>
                 <div class="mask"></div>
             </a>
@@ -491,7 +499,9 @@ You can create new features using the rich API provided by MaixPy.
 <div class="flex flex-wrap justify-between">
     <div class="feature_item">
         <div class="img_video">
-            <img src="/static/image/opencv_openmv.jpg">
+
+![OpenCV + OpenMV](/static/image/opencv_openmv.jpg)
+
             <p class="feature">OpenCV + OpenMV</p>
             <p class="description">Supports OpenCV, compatible with OpenMV</p>
         </div>
@@ -500,7 +510,9 @@ You can create new features using the rich API provided by MaixPy.
     </div>
     <div class="feature_item">
         <div class="img_video">
-            <img src="/static/image/maixcdk.png">
+
+![MaixCDK](/static/image/maixcdk.png)
+
             <p class="feature">C++ Version</p>
             <p class="description"><a href="https://github.com/sipeed/MaixCDK">MaixCDK</a> C++ version SDK, same API as MaixPy, commercial-friendly</p>
         </div>
@@ -509,7 +521,9 @@ You can create new features using the rich API provided by MaixPy.
     </div>
     <div class="feature_item">
         <div class="img_video">
-            <img src="/static/image/serial_module.png">
+
+![Serial module](/static/image/serial_module.png)
+
             <p class="feature">As a Serial Module</p>
             <p class="description">Control other MCUs via serial commands</p>
         </div>
@@ -662,7 +676,9 @@ You can create new features using the rich API provided by MaixPy.
     </div>
     <div class="feature_item">
         <div class="img_video">
-            <img src="/static/image/voice_recognize.jpg">
+
+![Voice recognition](/static/image/voice_recognize.jpg)
+
             <p class="feature">Voice Recognition</p>
             <p class="description">Real-time continuous voice recognition</p>
         </div>
@@ -707,7 +723,9 @@ You can create new features using the rich API provided by MaixPy.
     </div>
     <div class="feature_item">
         <div class="img_video">
-            <img src="/static/image/weather_station.jpg">
+
+![Weather station](/static/image/weather_station.jpg)
+
             <p class="feature">Weather Station</p>
             <p class="description">Monitor weather information such as temperature and humidity.</p>
         </div>
@@ -716,7 +734,9 @@ You can create new features using the rich API provided by MaixPy.
     </div>
     <div class="feature_item">
         <div class="img_video">
-            <img src="/static/image/thermal.jpg">
+
+![Thermal camera](/static/image/thermal.jpg)
+
             <p class="feature">Thermal Infrared Camera</p>
             <p class="description">Optional camera, for temperature image acquisition/measurement</p>
         </div>
@@ -725,7 +745,9 @@ You can create new features using the rich API provided by MaixPy.
     </div>
     <div class="feature_item">
         <div class="img_video">
-            <img src="/static/image/hdmi_capture.jpg">
+
+![HDMI capture](/static/image/hdmi_capture.jpg)
+
             <p class="feature">HDMI Video Capture</p>
             <p class="description">Optional feature, capture images via HDMI for server monitoring (KVM), remote control, external AI, streaming devices, etc.</p>
         </div>
@@ -752,7 +774,9 @@ You can create new features using the rich API provided by MaixPy.
     </div>
     <div class="feature_item">
         <div class="img_video">
-            <img src="/static/image/global_shutter.jpg">
+
+![High-speed recognition](/static/image/global_shutter.jpg)
+
             <p class="feature">High-Speed Recognition</p>
             <p class="description">Pair with a global shutter camera to accurately recognize high-speed moving objects</p>
         </div>
@@ -882,7 +906,7 @@ Compared to the limited NPU operator support and memory constraints of the previ
 
 ## Maix Ecosystem
 
-<img src="/static/image/maix_ecosystem.png" class="white_border shadow-xl rounded-md">
+![Maix ecosystem](/static/image/maix_ecosystem.png)
 
 
 ## Community {#community}

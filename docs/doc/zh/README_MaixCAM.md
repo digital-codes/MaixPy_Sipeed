@@ -26,13 +26,17 @@ title: MaixCAM MaixPy 快速开始
 
 ## 上手配置
 
+### 视频演示
+
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=113485669204279&bvid=BV1ncmRYmEDv&cid=26768769718&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" class="biliiframe"></iframe>
+
 ### 准备 TF 镜像卡和插入到设备
 
->! MaixCAM2内置emmc, 因此不需要插入TF卡. 如果需要升级和烧录系统, 请直接看<a href="./basic/os" target="_blank">升级和烧录系统</a>
+>! MaixCAM2内置emmc, 因此不需要插入TF卡. 如果需要升级和烧录系统, 请直接看[升级和烧录系统](./basic/os.md)
 
-如果你买的套餐里面有 TF 卡，里面已经有出厂镜像了，如果出厂时 TF 卡没有安装到设备，需要先小心打开外壳（注意里面有排线连接不要扯断了），然后插入 TF 卡。另外因为出厂的固件可能比较老旧，**务必**按照<a href="./basic/os" target="_blank">升级和烧录系统</a>先将系统升级到最新版本，否则可能会遇到某些应用 和 API 无法使用的问题。
+如果你买的套餐里面有 TF 卡，里面已经有出厂镜像了，如果出厂时 TF 卡没有安装到设备，需要先小心打开外壳（注意里面有排线连接不要扯断了），然后插入 TF 卡。另外因为出厂的固件可能比较老旧，**务必**按照[升级和烧录系统](./basic/os.md)先将系统升级到最新版本，否则可能会遇到某些应用 和 API 无法使用的问题。
 
-如果没买 TF 卡，则需要将系统烧录进自备的 TF 卡中，烧录方法请看<a href="./basic/os" target="_blank">升级和烧录系统</a>，然后再安装到板子。
+如果没买 TF 卡，则需要将系统烧录进自备的 TF 卡中，烧录方法请看[升级和烧录系统](./basic/os.md)，然后再安装到板子。
 
 ### 上电开机
 
@@ -42,7 +46,7 @@ title: MaixCAM MaixPy 快速开始
 
 如果屏幕没有显示
 * 请确认购买了配套的 TF 卡，如果确认有 TF 卡，并且已经插入到设备，可以**尝试[更新到最新的系统](./basic/os.md)**。
-* 如果你没有购买 TF 卡套餐，你需要按照<a href="./basic/os" target="_blank">升级和烧录系统</a>的方法烧录最新的系统到 TF 卡。
+* 如果你没有购买 TF 卡套餐，你需要按照[升级和烧录系统](./basic/os.md)的方法烧录最新的系统到 TF 卡。
 * 另外请确认屏幕和摄像头的排线没有松动，屏幕的排线在拆开外壳时很容易脱落，需要注意。
 
 ### 联网

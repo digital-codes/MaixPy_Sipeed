@@ -25,7 +25,7 @@ TODO
 
 ### Implementing the line tracking function
 
-You can quickly find straight lines using the `get_regression` of the `image` module, see [Line tracking](. /line_tracking.md).
+You can quickly find straight lines using the `get_regression` of the `image` module, see [Line tracking](../vision/line_tracking.md).
 
 Code：
 
@@ -67,4 +67,3 @@ After find the straight line with reference to the above code, you can use `a.th
 ### Implement the trolley control function
 
 TODO
-

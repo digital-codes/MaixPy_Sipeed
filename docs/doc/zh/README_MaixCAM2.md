@@ -26,13 +26,17 @@ title: MaixCAM2 MaixPy 快速开始
 
 ## 上手配置
 
->! MaixCAM2内置emmc, 因此不需要插入TF卡就能运行. 如果需要升级和烧录系统, 请直接看<a href="./basic/os" target="_blank">升级和烧录系统</a>
+>! MaixCAM2 有带 eMMC 和不带 eMMC 的版本。带 32GB eMMC 的版本正常情况下从 eMMC 启动，日常运行不需要插入 TF 卡；不带 eMMC 的版本需要插入已烧录系统的 TF 卡才能启动。TF 卡也可用于从 TF 卡启动系统，或用于向 eMMC 烧录、恢复系统。如需升级或烧录系统，请查看[升级和烧录系统](./basic/os.md)。
+
+### 视频演示
+
+<iframe src="//player.bilibili.com/player.html?isOutside=true&aid=115547387727388&bvid=BV1veCTBsEZa&cid=33995951833&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" class="biliiframe"></iframe>
 
 ### 上电开机
 
 使用 `Type-C` 数据线连接 `MaixCAM` 设备给设备供电，等待设备开机，开机会进入功能选择界面。
 
-![](https://wiki.sipeed.com/static/image/maixcam2_front_back.png)
+![](/static/image/maixcam2_front_back.png)
 
 如果屏幕没有显示
 * 可以**尝试[更新到最新的系统](./basic/os.md)**。
