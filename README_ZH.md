@@ -3,7 +3,7 @@ MaixPy (v4)
 
 <div align="center">
 
-![](https://wiki.sipeed.com/maixpy/static/image/maixpy_banner.webp)
+![](https://wiki.sipeed.com/maixpy/static/image/maixpy_banner.png)
 
 **Let's Sipeed up, Maximize AI's power!**
 
@@ -29,7 +29,7 @@ MaixPy (v4)
 </div>
 
 
-![MaixCAM](https://wiki.sipeed.com/maixpy/static/image/maixcams.webp)
+![MaixCAM](https://wiki.sipeed.com/maixpy/static/image/maixcams.png)
 
 
 ## 特性简介
@@ -93,13 +93,13 @@ MaixVision
 
 **[MaixHub](https://maixhub.com)** 提供免费在线 AI 训练， 无需 AI 基础和昂贵的训练设备，一键训练模型，一键部署。
 
-![MaixHub](https://wiki.sipeed.com/maixpy/static/image/maixhub.webp)
+![MaixHub](https://wiki.sipeed.com/maixpy/static/image/maixhub.jpg)
 
 ## 性能强劲的硬件平台
 
 目前支持三款硬件平台，详细请看 **[MaixCAM2](https://wiki.sipeed.com/maixcam2)**, **[MaixCAM](https://wiki.sipeed.com/maixcam)** 和 **[MaixCAM-Pro](https://wiki.sipeed.com/maixcam-pro)**.
 
-![MaixCAM](https://wiki.sipeed.com/maixpy/static/image/maixcams.webp)
+![MaixCAM](https://wiki.sipeed.com/maixpy/static/image/maixcams.png)
 
 
 
@@ -151,7 +151,7 @@ MaixVision
 MaixPy 不仅仅是一个 Python SDK，还有一个完整的生态系统，包括硬件、软件、工具、文档、甚至云平台等。
 看下面的图片:
 
-![](https://wiki.sipeed.com/maixpy/static/image/maix_ecosystem.webp)
+![](https://wiki.sipeed.com/maixpy/static/image/maix_ecosystem.png)
 
 ## 谁在用 MaixPy？
 

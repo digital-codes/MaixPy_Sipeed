@@ -3,7 +3,7 @@ MaixPy (v4)
 
 <div align="center">
 
-![](https://wiki.sipeed.com/maixpy/static/image/maixpy_banner.webp)
+![](https://wiki.sipeed.com/maixpy/static/image/maixpy_banner.png)
 
 [![Back MaixCam 2 on Kickstarter](https://img.shields.io/badge/Kickstarter-Back%20MaixCam%202-05CE78?style=for-the-badge&logo=kickstarter&logoColor=white)](https://www.kickstarter.com/projects/zepan/maixcam2-build-your-next-gen-4k-ai-camera)
 
@@ -30,7 +30,7 @@ English | [中文](./README_ZH.md)
 
 </div>
 
-![MaixCAM](https://wiki.sipeed.com/maixpy/static/image/maixcams.webp)
+![MaixCAM](https://wiki.sipeed.com/maixpy/static/image/maixcams.png)
 
 
 ## Feature Overview
@@ -95,14 +95,14 @@ MaixVision
 
 **[MaixHub](https://maixhub.com)** provide free online AI train service, one click to train AI model and deploy to MaixCAM even you have no AI knowledge and expensive training equipment.
 
-![MaixHub](https://wiki.sipeed.com/maixpy/static/image/maixhub.webp)
+![MaixHub](https://wiki.sipeed.com/maixpy/static/image/maixhub.jpg)
 
 
 ## Hardware platform MaixCAM
 
 And we provide two powerful hardware platform **[MaixCAM2](https://wiki.sipeed.com/maixcam2)**, **[MaixCAM](https://wiki.sipeed.com/maixcam)** and **[MaixCAM-Pro](https://wiki.sipeed.com/maixcam-pro)**.
 
-![MaixCAM](https://wiki.sipeed.com/maixpy/static/image/maixcams.webp)
+![MaixCAM](https://wiki.sipeed.com/maixpy/static/image/maixcams.png)
 
 
 ## Performance comparison
@@ -155,7 +155,7 @@ Here's the comparison between them:
 MaixPy not only a Python SDK, but have a whole ecosystem, including hardware, software, tools, docs, even cloud platform etc.
 See the picture below:
 
-![](https://wiki.sipeed.com/maixpy/static/image/maix_ecosystem.webp)
+![](https://wiki.sipeed.com/maixpy/static/image/maix_ecosystem.png)
 
 
 ## Who are using MaixPy?

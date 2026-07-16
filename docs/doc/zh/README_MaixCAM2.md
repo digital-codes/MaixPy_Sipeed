@@ -36,7 +36,7 @@ title: MaixCAM2 MaixPy 快速开始
 
 使用 `Type-C` 数据线连接 `MaixCAM` 设备给设备供电，等待设备开机，开机会进入功能选择界面。
 
-![](/static/image/maixcam2_front_back.webp)
+![](/static/image/maixcam2_front_back.png)
 
 如果屏幕没有显示
 * 可以**尝试[更新到最新的系统](./basic/os.md)**。

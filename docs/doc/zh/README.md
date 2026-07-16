@@ -55,9 +55,9 @@ MaixCAM 系列型号较多，如果你是第一次使用，先看包装、订单
 
 | 设备型号 | 产品图 | 上手文档 |
 | --- | --- | --- |
-| MaixCAM2 | ![MaixCAM2](/static/image/maixcam2_front_back.webp) | [快速开始 MaixCAM2](./README_MaixCAM2.md) |
-| MaixCAM / MaixCAM-Pro | ![MaixCAM / MaixCAM-Pro](/static/image/maixcams.webp) | [快速开始 MaixCAM](./README_MaixCAM.md) |
-| MaixCAM Lite / 无屏幕版本 | ![MaixCAM Lite / 无屏幕版本](/static/image/maixcam.webp) | [快速开始 MaixCAM 无屏幕版本](./README_no_screen.md) |
+| MaixCAM2 | ![MaixCAM2](/static/image/maixcam2_front_back.png) | [快速开始 MaixCAM2](./README_MaixCAM2.md) |
+| MaixCAM / MaixCAM-Pro | ![MaixCAM / MaixCAM-Pro](/static/image/maixcams.png) | [快速开始 MaixCAM](./README_MaixCAM.md) |
+| MaixCAM Lite / 无屏幕版本 | ![MaixCAM Lite / 无屏幕版本](/static/image/maixcam.png) | [快速开始 MaixCAM 无屏幕版本](./README_no_screen.md) |
 
 ## 写在前面
 
@@ -71,14 +71,14 @@ MaixCAM 系列型号较多，如果你是第一次使用，先看包装、订单
 
 ## 获得 MaixCAM/MaixCAM2 设备
 
-![maixcam2](/static/image/maixcam2_front_back.webp)
+![maixcam2](/static/image/maixcam2_front_back.png)
 
 
 基础资料:[MaixCAM2 介绍和资料](https://wiki.sipeed.com/hardware/zh/maixcam/maixcam2.html)
 购买链接:[Sipeed 淘宝](https://item.taobao.com/item.htm?id=846226367137) 或者 [Sipeed 速卖通](https://www.aliexpress.com/store/911876460)
 <br>
 
-![maixcam_pro](../../static/image/maixcam_pro.webp)
+![maixcam_pro](../../static/image/maixcam_pro.png)
 
 
 **MaixCAM**目前有几个版本，根据自己的需求买：

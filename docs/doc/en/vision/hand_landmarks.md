@@ -23,7 +23,7 @@ Example applications:
 
 Sample image:
 
-![Hand landmarks detection result](../../assets/hands_landmarks.webp)
+![Hand landmarks detection result](../../assets/hands_landmarks.jpg)
 
 Sample video:
 <video playsinline controls autoplay loop muted preload src="/static/video/hands_landmarks.mp4" type="video/mp4">
@@ -31,7 +31,7 @@ Classifier Result video
 </video>
 
 The 21 keypoints include:
-![](../../assets/hand_landmarks_doc.webp)
+![](../../assets/hand_landmarks_doc.jpg)
 
 ## Using Hand Keypoint Detection in MaixPy MaixCAM
 

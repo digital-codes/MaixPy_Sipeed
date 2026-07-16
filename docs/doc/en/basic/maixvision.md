@@ -132,9 +132,9 @@ img = image.load("/root/a.jpg")
 
 First, connect to the device, then click the button to browse the device file system, as shown below. Then you can upload files to the device or download files to the computer.
 
-![maixvision_browser2](../../assets/maixvision_browser2.webp)
+![maixvision_browser2](../../assets/maixvision_browser2.jpg)
 
-![maixvision_browser](../../assets/maixvision_browser.webp)
+![maixvision_browser](../../assets/maixvision_browser.jpg)
 
 .. details:: Alternatively, other tools can be used, click to expand
     First, know the device's IP address or name, which MaixVision can find, or see in the device's `Settings->System Information`, such as `maixcam-xxxx.local` or `192.168.0.123`.

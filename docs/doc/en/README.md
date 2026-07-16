@@ -47,9 +47,9 @@ There are several MaixCAM series products. If this is your first time using one,
 
 | Device Model | Product Image | Getting Started |
 | --- | --- | --- |
-| MaixCAM2 | ![MaixCAM2](/static/image/maixcam2_front_back.webp) | [Quick Start MaixCAM2](./README_MaixCAM2.md) |
-| MaixCAM / MaixCAM-Pro | ![MaixCAM / MaixCAM-Pro](/static/image/maixcams.webp) | [Quick Start MaixCAM](./README_MaixCAM.md) |
-| MaixCAM Lite / screenless version | ![MaixCAM Lite / screenless version](/static/image/maixcam.webp) | [Quick Start MaixCAM screenless version](./README_no_screen.md) |
+| MaixCAM2 | ![MaixCAM2](/static/image/maixcam2_front_back.png) | [Quick Start MaixCAM2](./README_MaixCAM2.md) |
+| MaixCAM / MaixCAM-Pro | ![MaixCAM / MaixCAM-Pro](/static/image/maixcams.png) | [Quick Start MaixCAM](./README_MaixCAM.md) |
+| MaixCAM Lite / screenless version | ![MaixCAM Lite / screenless version](/static/image/maixcam.png) | [Quick Start MaixCAM screenless version](./README_no_screen.md) |
 
 <iframe style="width:100%;min-height:30em" src="https://www.youtube.com/embed/qV1lw0UVUYI?si=g3xUX5v3iT9r7RxJ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
@@ -62,14 +62,14 @@ There are several MaixCAM series products. If this is your first time using one,
 
 ## Get a MaixCAM/MaixCAM2 Device
 
-![maixcam2](/static/image/maixcam2_front_back.webp)
+![maixcam2](/static/image/maixcam2_front_back.png)
 
 
 Basic Information:[MaixCAM2 Introduction & Resources](https://wiki.sipeed.com/hardware/en/maixcam/maixcam2.html)
 Purchase Links:[Sipeed Taobao](https://item.taobao.com/item.htm?id=846226367137) or [Sipeed AliExpress](https://www.aliexpress.com/store/911876460)
 <br>
 
-![maixcam_pro](../../static/image/maixcam_pro.webp)
+![maixcam_pro](../../static/image/maixcam_pro.png)
 
 **MaixCAM** currently has several versions. Choose according to your needs:
 

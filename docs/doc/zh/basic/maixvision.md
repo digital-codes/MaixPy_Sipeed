@@ -111,9 +111,9 @@ say_hello()
 
 先连接设备，然后点击浏览设备文件系统的按钮，有两个入口，如下图，然后就能上传文件到设备，或者从设备下载文件到电脑了。
 
-![maixvision_browser2](../../assets/maixvision_browser2.webp)
+![maixvision_browser2](../../assets/maixvision_browser2.jpg)
 
-![maixvision_browser](../../assets/maixvision_browser.webp)
+![maixvision_browser](../../assets/maixvision_browser.jpg)
 
 
 .. details::也可以用其它工具代替，点击展开
