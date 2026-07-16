@@ -303,7 +303,9 @@ h1 {
 
 <div class="w-full flex flex-col justify-center text-center">
     <div class="flex justify-center">
-        <img src="/static/image/maixpy_banner.png" alt="MaixPy Banner">
+
+![MaixPy Banner](/static/image/maixpy_banner.webp)
+
     </div>
     <h1><span>MaixPy (v4)</span></h1>
     <h3>极速落地 AI 视觉、听觉应用</h3>
@@ -332,7 +334,7 @@ h1 {
 
 <div class="mt-16"></div>
 
-<img class="text-center" src="/static/image/maixcams.png">
+![MaixCAM 系列](/static/image/maixcams.webp)
 
 <div class="mt-6"></div>
 
@@ -428,7 +430,7 @@ MaixVision
 
 <div class="mt-3"></div>
 
-<img class="shadow-xl white_border" src="/static/image/maixhub.jpg">
+![MaixHub](/static/image/maixhub.webp)
 </div>
 <!-- end -->
 
@@ -446,21 +448,27 @@ MaixVision
     <div class="flex flex-row w-full">
         <a href="https://wiki.sipeed.com/maixcam2" target="_blank" class="flex flex-row items-center justify-around w-full card_item mask_wrapper item1">
             <div class="item_name">MaixCAM2</div>
-            <img src="https://wiki.sipeed.com/static/image/maixcam2_small.png">
+
+![MaixCAM2](/static/image/maixcam2_small.webp)
+
             <div class="mask"></div>
         </a>
     </div>
     <div class="flex flex-row w-full justify-between">
         <div class="flex_center flex-row justify-start w-1/2">
             <a href="https://wiki.sipeed.com/hardware/zh/maixcam/maixcam.html" target="_blank" class="flex_center card_item mask_wrapper item2">
-                <img src="https://wiki.sipeed.com/static/image/maixcam_small.png">
+
+![MaixCAM](/static/image/maixcam_small.webp)
+
                 <div class="item_name pt-8">MaixCAM</div>
                 <div class="mask"></div>
             </a>
         </div>
         <div class="flex_center flex-row justify-end w-1/2">
             <a href="https://wiki.sipeed.com/maixcam-pro" target="_blank" class="flex_center card_item mask_wrapper item3">
-                <img src="https://wiki.sipeed.com/static/image/maixcam_pro_small.png">
+
+![MaixCAM-Pro](/static/image/maixcam_pro_small.webp)
+
                 <div class="item_name pt-8">MaixCAM-Pro</div>
                 <div class="mask"></div>
             </a>
@@ -492,7 +500,9 @@ MaixVision
 <div class="flex flex-wrap justify-between">
     <div class="feature_item">
         <div class="img_video">
-            <img src="/static/image/opencv_openmv.jpg">
+
+![OpenCV + OpenMV](/static/image/opencv_openmv.webp)
+
             <p class="feature">OpenCV + OpenMV</p>
             <p class="description">支持 OpenCV， 兼容 OpenMV</p>
         </div>
@@ -501,7 +511,9 @@ MaixVision
     </div>
     <div class="feature_item">
         <div class="img_video">
-            <img src="/static/image/maixcdk.png">
+
+![MaixCDK](/static/image/maixcdk.webp)
+
             <p class="feature">C++版本</p>
             <p class="description"><a href="https://github.com/sipeed/MaixCDK">MaixCDK</a> C++版本的SDK，与MaixPy的API相同, 商业友好</p>
         </div>
@@ -510,7 +522,9 @@ MaixVision
     </div>
     <div class="feature_item">
         <div class="img_video">
-            <img src="/static/image/serial_module.png">
+
+![串口模块](/static/image/serial_module.webp)
+
             <p class="feature">作为串口模块</p>
             <p class="description">其它 MCU 通过串口命令控制</p>
         </div>
@@ -708,7 +722,9 @@ MaixVision
     </div>
     <div class="feature_item">
         <div class="img_video">
-            <img src="/static/image/weather_station.jpg">
+
+![天气站](/static/image/weather_station.webp)
+
             <p class="feature">天气站</p>
             <p class="description">监视天气信息，如温度，湿度等。</p>
         </div>
@@ -717,7 +733,9 @@ MaixVision
     </div>
     <div class="feature_item">
         <div class="img_video">
-            <img src="/static/image/thermal.jpg">
+
+![热红外摄像头](/static/image/thermal.webp)
+
             <p class="feature">热红外摄像头</p>
             <p class="description">选配摄像头，温度图像获取/测量</p>
         </div>
@@ -726,7 +744,9 @@ MaixVision
     </div>
     <div class="feature_item">
         <div class="img_video">
-            <img src="/static/image/hdmi_capture.jpg">
+
+![HDMI 捕获视频](/static/image/hdmi_capture.webp)
+
             <p class="feature">HDMI 捕获视频</p>
             <p class="description">选配，通过 HDMI 捕获图像，作为服务器监控（KVM）和远程控制、外接 AI、推流设备等</p>
         </div>
@@ -753,7 +773,9 @@ MaixVision
     </div>
     <div class="feature_item">
         <div class="img_video">
-            <img src="/static/image/global_shutter.jpg">
+
+![高速识别](/static/image/global_shutter.webp)
+
             <p class="feature">高速识别</p>
             <p class="description">搭配全局摄像头，高速运动物体也能准确识别</p>
         </div>
@@ -903,7 +925,7 @@ MaixVision
 
 ## Maix 生态
 
-<img src="/static/image/maix_ecosystem.png" class="white_border shadow-xl rounded-md">
+![Maix 生态](/static/image/maix_ecosystem.webp)
 
 
 ## 社区 {#community}
@@ -929,4 +951,3 @@ MaixVision
 
 </div>
 <!-- wrapper end -->
-

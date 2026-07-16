@@ -17,7 +17,7 @@ update:
 
 本文按官方示例视频的流程整理，以 **图像检测模型** 为例说明完整操作步骤。若只是想快速体验 AI 功能，可先到 [MaixHub 模型库](https://maixhub.com/model/zoo) 查找是否已有可直接使用的模型；若需要识别自定义目标，再使用在线训练功能。
 
-![MaixHub 首页](../../assets/maixhub_home.png)
+![MaixHub 首页](../../assets/maixhub_home.webp)
 
 > 下方截图仅用于说明操作流程，账号、项目、数据集、图片文件名、二维码和训练任务编号等隐私信息已做模糊处理。
 
@@ -25,7 +25,7 @@ update:
 
 MaixHub 首页提供两段官方视频。建议先观看“快速上手”，了解在线训练的整体流程；需要跟随页面逐步操作时，再观看“详细教程”。登录 [MaixHub](https://maixhub.com/) 后，在首页顶部的视频区域点击“立即观看”即可观看。
 
-![MaixHub 官方视频演示入口](../../assets/maixhub_train_video_entries.png)
+![MaixHub 官方视频演示入口](../../assets/maixhub_train_video_entries.webp)
 
 ## MaixHub 训练模型流程
 
@@ -44,7 +44,7 @@ MaixHub 首页提供两段官方视频。建议先观看“快速上手”，了
 
 进入 MaixHub 首页后，选择“模型训练”，创建新的训练项目。创建项目时需要选择模型类型和硬件平台：
 
-![MaixHub 选择训练项目类型](../../assets/maixhub_train_model_type.png)
+![MaixHub 选择训练项目类型](../../assets/maixhub_train_model_type.webp)
 
 本文后续以 **图像检测模型** 为例进行说明，适用于需要在画面中定位目标位置的场景。
 
@@ -58,7 +58,7 @@ MaixHub 首页提供两段官方视频。建议先观看“快速上手”，了
 
 网页端进入“采集数据”页面，选择采集到训练集或验证集，然后生成二维码：
 
-![MaixHub 设备扫码采集](../../assets/maixhub_train_device_qrcode.png)
+![MaixHub 设备扫码采集](../../assets/maixhub_train_device_qrcode.webp)
 
 基本流程：
 
@@ -71,7 +71,7 @@ MaixHub 首页提供两段官方视频。建议先观看“快速上手”，了
 
 可在数据集页面批量选择图片，并移动到训练集或验证集：
 
-![MaixHub 整理训练集和验证集](../../assets/maixhub_train_split_validation.png)
+![MaixHub 整理训练集和验证集](../../assets/maixhub_train_split_validation.webp)
 
 ### 标注数据
 
@@ -79,7 +79,7 @@ MaixHub 首页提供两段官方视频。建议先观看“快速上手”，了
 
 进入“标注数据”页面后，创建标注、框选目标并保存：
 
-![MaixHub 标注数据页面](../../assets/maixhub_train_annotate_page.png)
+![MaixHub 标注数据页面](../../assets/maixhub_train_annotate_page.webp)
 
 标注时注意：
 
@@ -94,7 +94,7 @@ MaixHub 首页提供两段官方视频。建议先观看“快速上手”，了
 
 数据和标注检查完成后，进入“创建任务”页面。页面主要包含图像增强、选择模型和训练参数三部分：
 
-![MaixHub 配置训练参数](../../assets/maixhub_train_parameters.png)
+![MaixHub 配置训练参数](../../assets/maixhub_train_parameters.webp)
 
 新手可以按下表选择，先跑通一次完整流程，再根据实际效果调整：
 
@@ -112,7 +112,7 @@ MaixHub 首页提供两段官方视频。建议先观看“快速上手”，了
 
 训练开始后，可在“训练记录”中查看进度、日志、数据集统计和训练参数。训练完成后，结果页会显示损失曲线、准确率曲线和验证集抽样结果：
 
-![MaixHub 训练完成结果](../../assets/maixhub_train_result.png)
+![MaixHub 训练完成结果](../../assets/maixhub_train_result.webp)
 
 优先检查：
 
@@ -122,13 +122,13 @@ MaixHub 首页提供两段官方视频。建议先观看“快速上手”，了
 
 如果训练失败，先查看右侧训练日志。如下示例中，失败原因是验证集中某个标签的图片数量不足 5 张，需要回到数据集补充验证图片后重新训练。
 
-![MaixHub 验证集数量不足导致训练失败](../../assets/maixhub_train_validation_failed.png)
+![MaixHub 验证集数量不足导致训练失败](../../assets/maixhub_train_validation_failed.webp)
 
 ### 部署到 MaixCAM / MaixCAM-Pro / MaixCAM2
 
 训练完成并确认验证效果后，进入项目的“部署模型”页面，选择需要部署的训练记录。部署方式选择“手动部署”，点击“下载模型”获取模型压缩包。
 
-<img src="../../assets/maixhub_train_manual_deploy_page.png" alt="MaixHub 手动部署页面" style="max-width: 560px; width: 100%; height: auto;">
+![MaixHub 手动部署页面](../../assets/maixhub_train_manual_deploy_page.webp)
 
 模型包下载完成后先解压。不同设备平台生成的模型文件后缀不同，手动部署时按实际设备选择需要上传的文件：
 
@@ -139,15 +139,15 @@ MaixHub 首页提供两段官方视频。建议先观看“快速上手”，了
 
 解压目录中通常还会包含 `main.py`、`app.yaml` 和 `report.json` 等文件。`main.py` 可作为运行示例参考，`app.yaml` 可作为应用配置参考，`report.json` 可用于查看训练和导出信息。
 
-<img src="../../assets/maixhub_train_manual_deploy_package.png" alt="MaixHub 模型压缩包内容" style="max-width: 560px; width: 100%; height: auto;">
+![MaixHub 模型压缩包内容](../../assets/maixhub_train_manual_deploy_package.webp)
 
 打开 MaixVision 并连接设备，进入左侧“设备文件管理器”。在设备端进入 `/root/models` 目录，用于存放模型文件。
 
-<img src="../../assets/maixhub_train_manual_deploy_maixvision.png" alt="MaixVision 设备文件管理器" style="max-width: 420px; width: 100%; height: auto;">
+![MaixVision 设备文件管理器](../../assets/maixhub_train_manual_deploy_maixvision.webp)
 
 点击 MaixVision 中的上传文件按钮，从解压目录选择对应设备平台的模型文件并上传到设备的 `/root/models` 目录。MaixCAM / MaixCAM-Pro 上传 `.mud` 和 `.cvimodel`；MaixCAM2 上传 `.mud` 和对应的两个 `.axmodel`。
 
-<img src="../../assets/maixhub_train_manual_deploy_upload.png" alt="上传 MaixHub 模型文件" style="max-width: 560px; width: 100%; height: auto;">
+![上传 MaixHub 模型文件](../../assets/maixhub_train_manual_deploy_upload.webp)
 
 上传完成后，按下面步骤先跑通示例程序：
 
@@ -158,4 +158,4 @@ MaixHub 首页提供两段官方视频。建议先观看“快速上手”，了
 
 需要集成到自己的项目时，将项目代码中的模型路径替换为 `/root/models/model_xxx.mud`，并参考 [YOLO 物体检测](./yolov5.md) 中的检测代码结构读取摄像头、执行检测和显示结果。完成后仍需在真实场景中复测检测框位置、置信度和误检情况。
 
-<img src="../../assets/maixhub_train_manual_deploy_result.png" alt="MaixHub 模型设备端运行效果" style="max-width: 520px; width: 100%; height: auto;">
+![MaixHub 模型设备端运行效果](../../assets/maixhub_train_manual_deploy_result.webp)

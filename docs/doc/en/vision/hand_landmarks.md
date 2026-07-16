@@ -23,7 +23,7 @@ Example applications:
 
 Sample image:
 
-<img src="../../assets/hands_landmarks.jpg" style="max-height:24rem">
+![Hand landmarks detection result](../../assets/hands_landmarks.webp)
 
 Sample video:
 <video playsinline controls autoplay loop muted preload src="/static/video/hands_landmarks.mp4" type="video/mp4">
@@ -31,7 +31,7 @@ Classifier Result video
 </video>
 
 The 21 keypoints include:
-![](../../assets/hand_landmarks_doc.jpg)
+![](../../assets/hand_landmarks_doc.webp)
 
 ## Using Hand Keypoint Detection in MaixPy MaixCAM
 
@@ -110,4 +110,3 @@ These methods allow advanced gesture and action recognition leveraging MaixPy's 
 ---
 
 This version includes all details, including the explanation for `landmarks_rel`.
-

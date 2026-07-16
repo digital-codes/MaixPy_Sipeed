@@ -17,7 +17,13 @@ Visit the [MaixVision homepage](https://wiki.sipeed.com/maixvision) to download.
 
 ## Using MaixPy Programming and Online Running
 
-Follow the steps in [Quick Start](../README.md) to connect your device, and you can easily use MaixPy programming and run it online.
+Before using MaixVision for programming, complete the device connection steps in the quick start guide that matches your device:
+
+* [Quick Start MaixCAM2](../README_MaixCAM2.html#Preparing-to-Connect-Computer-and-Device)
+* [Quick Start MaixCAM](../README_MaixCAM.html#Preparing-to-Connect-Computer-and-Device)
+* [Quick Start MaixCAM screenless version](../README_no_screen.html#Preparing-to-Connect-the-Computer-and-Device)
+
+After the device is connected, you can use MaixVision for MaixPy programming and online running.
 
 ## Real-time Image Preview
 
@@ -126,9 +132,9 @@ img = image.load("/root/a.jpg")
 
 First, connect to the device, then click the button to browse the device file system, as shown below. Then you can upload files to the device or download files to the computer.
 
-![maixvision_browser2](../../assets/maixvision_browser2.jpg)
+![maixvision_browser2](../../assets/maixvision_browser2.webp)
 
-![maixvision_browser](../../assets/maixvision_browser.jpg)
+![maixvision_browser](../../assets/maixvision_browser.webp)
 
 .. details:: Alternatively, other tools can be used, click to expand
     First, know the device's IP address or name, which MaixVision can find, or see in the device's `Settings->System Information`, such as `maixcam-xxxx.local` or `192.168.0.123`.
@@ -181,4 +187,3 @@ Of course, you can also use third-party shell tools. For example, use your syste
 ## Using Graphical Block Programming
 
 Under development, please stay tuned.
-

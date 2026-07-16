@@ -28,7 +28,7 @@ title: MaixCAM MaixPy 快速开始
 | 资源汇总                    | 链接                                                                                      |
 | :-------------------------: | :-------------------------------------------------------------------------------------:|
 |  MaixPy 教程文档 📖         | [wiki.sipeed.com/maixpy](https://wiki.sipeed.com/maixpy)                                   |
-| MaixPy 例程和源码 <img src="/static/image/github-fill.svg" style="height: 1.5em;vertical-align: middle;">           | [github.com/sipeed/MaixPy](https://github.com/sipeed/MaixPy)                               |
+| MaixPy 例程和源码 ![GitHub](/static/image/github-fill.svg)           | [github.com/sipeed/MaixPy](https://github.com/sipeed/MaixPy)                               |
 |  MaixCAM 硬件资料 📷        | [wiki.sipeed.com/maixcam](https://wiki.sipeed.com/maixcam) </br> [wiki.sipeed.com/maixcam-pro](https://wiki.sipeed.com/maixcam-pro)  </br>  [wiki.sipeed.com/maixcam2](https://wiki.sipeed.com/maixcam2)                             |
 |  MaixPy API 文档 📚        | [wiki.sipeed.com/maixpy/api/](https://wiki.sipeed.com/maixpy/api/index.html)               |
 | MaixPy 视频和教程 💿        | [B站搜 MaixCAM 或 MaixPy](https://search.bilibili.com/all?keyword=maixcam&from_source=webtop_search&spm_id_from=333.1007&search_source=5) |
@@ -55,9 +55,9 @@ MaixCAM 系列型号较多，如果你是第一次使用，先看包装、订单
 
 | 设备型号 | 产品图 | 上手文档 |
 | --- | --- | --- |
-| MaixCAM2 | <img src="/static/image/maixcam2_front_back.png" alt="MaixCAM2" width="220"> | [快速开始 MaixCAM2](./README_MaixCAM2.md) |
-| MaixCAM / MaixCAM-Pro | <img src="/static/image/maixcams.png" alt="MaixCAM / MaixCAM-Pro" width="220"> | [快速开始 MaixCAM](./README_MaixCAM.md) |
-| MaixCAM Lite / 无屏幕版本 | <img src="/static/image/maixcam.png" alt="MaixCAM Lite / 无屏幕版本" width="220"> | [快速开始 MaixCAM 无屏幕版本](./README_no_screen.md) |
+| MaixCAM2 | ![MaixCAM2](/static/image/maixcam2_front_back.webp) | [快速开始 MaixCAM2](./README_MaixCAM2.md) |
+| MaixCAM / MaixCAM-Pro | ![MaixCAM / MaixCAM-Pro](/static/image/maixcams.webp) | [快速开始 MaixCAM](./README_MaixCAM.md) |
+| MaixCAM Lite / 无屏幕版本 | ![MaixCAM Lite / 无屏幕版本](/static/image/maixcam.webp) | [快速开始 MaixCAM 无屏幕版本](./README_no_screen.md) |
 
 ## 写在前面
 
@@ -71,14 +71,14 @@ MaixCAM 系列型号较多，如果你是第一次使用，先看包装、订单
 
 ## 获得 MaixCAM/MaixCAM2 设备
 
-![maixcam2](/static/image/maixcam2_front_back.png)
+![maixcam2](/static/image/maixcam2_front_back.webp)
 
 
 基础资料:[MaixCAM2 介绍和资料](https://wiki.sipeed.com/hardware/zh/maixcam/maixcam2.html)
 购买链接:[Sipeed 淘宝](https://item.taobao.com/item.htm?id=846226367137) 或者 [Sipeed 速卖通](https://www.aliexpress.com/store/911876460)
 <br>
 
-![maixcam_pro](../../static/image/maixcam_pro.png)
+![maixcam_pro](../../static/image/maixcam_pro.webp)
 
 
 **MaixCAM**目前有几个版本，根据自己的需求买：

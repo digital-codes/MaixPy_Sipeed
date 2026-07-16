@@ -21,7 +21,7 @@ title: MaixCAM MaixPy Quick Start
 | Resource Summary           | Link                                                                                      |
 | :-------------------------:| :-------------------------------------------------------------------------------------:|
 |  Tutorial Documentation 📖 | [wiki.sipeed.com/maixpy/en/](https://wiki.sipeed.com/maixpy/en/)                                   |
-| Examples and Source Code <img src="/static/image/github-fill.svg" style="height: 1.5em;vertical-align: middle;"> | [github.com/sipeed/MaixPy](https://github.com/sipeed/MaixPy)                               |
+| Examples and Source Code ![GitHub](/static/image/github-fill.svg) | [github.com/sipeed/MaixPy](https://github.com/sipeed/MaixPy)                               |
 |  MaixCAM Hardware 📷 | [wiki.sipeed.com/maixcam](https://wiki.sipeed.com/maixcam) </br> [wiki.sipeed.com/maixcam-pro](https://wiki.sipeed.com/maixcam-pro)  </br>  [wiki.sipeed.com/maixcam2](https://wiki.sipeed.com/maixcam2)|
 |  API Documentation 📚 | [wiki.sipeed.com/maixpy/api/](https://wiki.sipeed.com/maixpy/api/index.html)               |
 | MaixHub App Store 📦      | [maixhub.com/app](https://maixhub.com/app)                                                 |
@@ -47,9 +47,9 @@ There are several MaixCAM series products. If this is your first time using one,
 
 | Device Model | Product Image | Getting Started |
 | --- | --- | --- |
-| MaixCAM2 | <img src="/static/image/maixcam2_front_back.png" alt="MaixCAM2" width="220"> | [Quick Start MaixCAM2](./README_MaixCAM2.md) |
-| MaixCAM / MaixCAM-Pro | <img src="/static/image/maixcams.png" alt="MaixCAM / MaixCAM-Pro" width="220"> | [Quick Start MaixCAM](./README_MaixCAM.md) |
-| MaixCAM Lite / screenless version | <img src="/static/image/maixcam.png" alt="MaixCAM Lite / screenless version" width="220"> | [Quick Start MaixCAM screenless version](./README_no_screen.md) |
+| MaixCAM2 | ![MaixCAM2](/static/image/maixcam2_front_back.webp) | [Quick Start MaixCAM2](./README_MaixCAM2.md) |
+| MaixCAM / MaixCAM-Pro | ![MaixCAM / MaixCAM-Pro](/static/image/maixcams.webp) | [Quick Start MaixCAM](./README_MaixCAM.md) |
+| MaixCAM Lite / screenless version | ![MaixCAM Lite / screenless version](/static/image/maixcam.webp) | [Quick Start MaixCAM screenless version](./README_no_screen.md) |
 
 <iframe style="width:100%;min-height:30em" src="https://www.youtube.com/embed/qV1lw0UVUYI?si=g3xUX5v3iT9r7RxJ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
@@ -62,14 +62,14 @@ There are several MaixCAM series products. If this is your first time using one,
 
 ## Get a MaixCAM/MaixCAM2 Device
 
-![maixcam2](/static/image/maixcam2_front_back.png)
+![maixcam2](/static/image/maixcam2_front_back.webp)
 
 
 Basic Information:[MaixCAM2 Introduction & Resources](https://wiki.sipeed.com/hardware/en/maixcam/maixcam2.html)
 Purchase Links:[Sipeed Taobao](https://item.taobao.com/item.htm?id=846226367137) or [Sipeed AliExpress](https://www.aliexpress.com/store/911876460)
 <br>
 
-![maixcam_pro](../../static/image/maixcam_pro.png)
+![maixcam_pro](../../static/image/maixcam_pro.webp)
 
 **MaixCAM** currently has several versions. Choose according to your needs:
 

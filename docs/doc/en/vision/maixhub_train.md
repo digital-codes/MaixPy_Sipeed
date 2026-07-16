@@ -17,7 +17,7 @@ update:
 
 This page follows the official example video workflow and uses an **image detection model** as the example. If you only want to try AI features quickly, first check the [MaixHub Model Zoo](https://maixhub.com/model/zoo) to see whether a ready-to-use model already exists. Use online training when you need to recognize custom targets.
 
-![MaixHub home page](../../assets/maixhub_home.png)
+![MaixHub home page](../../assets/maixhub_home.webp)
 
 > The screenshots below are for workflow guidance. Account, project, dataset, image file names, QR codes, and training task IDs have been blurred.
 
@@ -25,7 +25,7 @@ This page follows the official example video workflow and uses an **image detect
 
 MaixHub provides two official videos on the home page. Watch **Quick Start** first to understand the overall online training workflow. When you need to follow the page step by step, watch **Tutorial** as a detailed walkthrough. After logging in to [MaixHub](https://maixhub.com/), click **Play Video** in the video area at the top of the home page to watch.
 
-![MaixHub official video entries](../../assets/maixhub_train_video_entries.png)
+![MaixHub official video entries](../../assets/maixhub_train_video_entries.webp)
 
 ## MaixHub Model Training Workflow
 
@@ -44,7 +44,7 @@ This section keeps the complete tutorial in one workflow category and follows th
 
 From the MaixHub home page, enter **Model Training** and create a new training project. Select the model type and hardware platform during project creation:
 
-![MaixHub training project type selection](../../assets/maixhub_train_model_type.png)
+![MaixHub training project type selection](../../assets/maixhub_train_model_type.webp)
 
 This guide uses an **image detection model** in the following steps. It is suitable when the model needs to locate target positions in an image.
 
@@ -58,7 +58,7 @@ It is recommended to collect images with the MaixHub app on the device. Device-c
 
 On the web page, open **Collect Data**, choose whether the images should go to the training set or validation set, and generate a QR code:
 
-![MaixHub device collection QR code](../../assets/maixhub_train_device_qrcode.png)
+![MaixHub device collection QR code](../../assets/maixhub_train_device_qrcode.webp)
 
 Basic workflow:
 
@@ -71,7 +71,7 @@ The training set is used for learning target features, while the validation set 
 
 In the dataset page, select images in batches and move them to the training set or validation set as needed:
 
-![MaixHub organize training and validation sets](../../assets/maixhub_train_split_validation.png)
+![MaixHub organize training and validation sets](../../assets/maixhub_train_split_validation.webp)
 
 ### Annotate Data
 
@@ -79,7 +79,7 @@ Image classification only requires selecting a category for each image. Image de
 
 Open **Annotate Data**, create annotations, draw target boxes, and save the result:
 
-![MaixHub annotation page](../../assets/maixhub_train_annotate_page.png)
+![MaixHub annotation page](../../assets/maixhub_train_annotate_page.webp)
 
 Annotation tips:
 
@@ -94,7 +94,7 @@ For larger datasets, complete one full training and deployment cycle with a smal
 
 After checking the dataset and annotations, open **Create Task**. The page mainly contains image augmentation, model selection, and training parameter panels:
 
-![MaixHub training parameter settings](../../assets/maixhub_train_parameters.png)
+![MaixHub training parameter settings](../../assets/maixhub_train_parameters.webp)
 
 Beginners can use the table below first, complete one full workflow, then adjust settings based on the actual result:
 
@@ -112,7 +112,7 @@ After confirming the model information and parameters, click **Create Training T
 
 After training starts, open **Training Records** to view progress, logs, dataset statistics, and training parameters. When training is complete, the result page shows loss curves, accuracy curves, and validation examples:
 
-![MaixHub training result](../../assets/maixhub_train_result.png)
+![MaixHub training result](../../assets/maixhub_train_result.webp)
 
 Check the following first:
 
@@ -122,13 +122,13 @@ Check the following first:
 
 If training fails, check the log on the right first. In the example below, the failure is caused by fewer than 5 validation images for one label. Return to the dataset page, add enough validation images, and create a new training task.
 
-![MaixHub training failed because validation images are insufficient](../../assets/maixhub_train_validation_failed.png)
+![MaixHub training failed because validation images are insufficient](../../assets/maixhub_train_validation_failed.webp)
 
 ### Deploy to MaixCAM / MaixCAM-Pro / MaixCAM2
 
 After training is complete and the validation result is acceptable, open the project deployment page and select the training record to deploy. Choose **Manual Deployment**, then click **Download Model** to download the model package.
 
-<img src="../../assets/maixhub_train_manual_deploy_page.png" alt="MaixHub manual deployment page" style="max-width: 560px; width: 100%; height: auto;">
+![MaixHub manual deployment page](../../assets/maixhub_train_manual_deploy_page.webp)
 
 Unzip the downloaded package first. Different device platforms generate different model file extensions. For manual deployment, upload the files that match the target device:
 
@@ -139,15 +139,15 @@ Unzip the downloaded package first. Different device platforms generate differen
 
 The unzipped folder usually also contains `main.py`, `app.yaml`, and `report.json`. `main.py` can be used as the example program reference, `app.yaml` can be used as an app configuration reference, and `report.json` can be used to check training and export information.
 
-<img src="../../assets/maixhub_train_manual_deploy_package.png" alt="MaixHub model package contents" style="max-width: 560px; width: 100%; height: auto;">
+![MaixHub model package contents](../../assets/maixhub_train_manual_deploy_package.webp)
 
 Open MaixVision and connect to the device. Open **Device File Manager** on the left, then enter `/root/models` on the device. This directory is used to store model files.
 
-<img src="../../assets/maixhub_train_manual_deploy_maixvision.png" alt="MaixVision device file manager" style="max-width: 420px; width: 100%; height: auto;">
+![MaixVision device file manager](../../assets/maixhub_train_manual_deploy_maixvision.webp)
 
 Click **Upload File** in MaixVision, select the model files for the target device from the unzipped folder, and upload them to `/root/models` on the device. For MaixCAM / MaixCAM-Pro, upload the `.mud` and `.cvimodel` files. For MaixCAM2, upload the `.mud` file and the corresponding two `.axmodel` files.
 
-<img src="../../assets/maixhub_train_manual_deploy_upload.png" alt="Upload MaixHub model files" style="max-width: 560px; width: 100%; height: auto;">
+![Upload MaixHub model files](../../assets/maixhub_train_manual_deploy_upload.webp)
 
 After uploading, run the example program first:
 
@@ -158,4 +158,4 @@ After uploading, run the example program first:
 
 To integrate the model into your own project, replace the model path in your code with `/root/models/model_xxx.mud`, and follow the detection code structure in [YOLO object detection](./yolov5.md) to read from the camera, run detection, and display the result. After integration, test again in the real scene and check the detection box position, confidence, and false detections.
 
-<img src="../../assets/maixhub_train_manual_deploy_result.png" alt="MaixHub model running on device" style="max-width: 520px; width: 100%; height: auto;">
+![MaixHub model running on device](../../assets/maixhub_train_manual_deploy_result.webp)

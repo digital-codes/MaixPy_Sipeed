@@ -3,7 +3,7 @@ MaixPy (v4)
 
 <div align="center">
 
-![](https://wiki.sipeed.com/maixpy/static/image/maixpy_banner.png)
+![](https://wiki.sipeed.com/maixpy/static/image/maixpy_banner.webp)
 
 [![Back MaixCam 2 on Kickstarter](https://img.shields.io/badge/Kickstarter-Back%20MaixCam%202-05CE78?style=for-the-badge&logo=kickstarter&logoColor=white)](https://www.kickstarter.com/projects/zepan/maixcam2-build-your-next-gen-4k-ai-camera)
 
@@ -30,7 +30,7 @@ English | [中文](./README_ZH.md)
 
 </div>
 
-![MaixCAM](https://wiki.sipeed.com/maixpy/static/image/maixcams.png)
+![MaixCAM](https://wiki.sipeed.com/maixpy/static/image/maixcams.webp)
 
 
 ## Feature Overview
@@ -95,14 +95,14 @@ MaixVision
 
 **[MaixHub](https://maixhub.com)** provide free online AI train service, one click to train AI model and deploy to MaixCAM even you have no AI knowledge and expensive training equipment.
 
-![MaixHub](https://wiki.sipeed.com/maixpy/static/image/maixhub.jpg)
+![MaixHub](https://wiki.sipeed.com/maixpy/static/image/maixhub.webp)
 
 
 ## Hardware platform MaixCAM
 
 And we provide two powerful hardware platform **[MaixCAM2](https://wiki.sipeed.com/maixcam2)**, **[MaixCAM](https://wiki.sipeed.com/maixcam)** and **[MaixCAM-Pro](https://wiki.sipeed.com/maixcam-pro)**.
 
-![MaixCAM](https://wiki.sipeed.com/maixpy/static/image/maixcams.png)
+![MaixCAM](https://wiki.sipeed.com/maixpy/static/image/maixcams.webp)
 
 
 ## Performance comparison
@@ -155,7 +155,7 @@ Here's the comparison between them:
 MaixPy not only a Python SDK, but have a whole ecosystem, including hardware, software, tools, docs, even cloud platform etc.
 See the picture below:
 
-![](https://wiki.sipeed.com/maixpy/static/image/maix_ecosystem.png)
+![](https://wiki.sipeed.com/maixpy/static/image/maix_ecosystem.webp)
 
 
 ## Who are using MaixPy?
@@ -194,6 +194,3 @@ All files in this repository are under the terms of the [Apache License 2.0 Sipe
 * QQ group: 862340358
 * Telegram: [t.me/maixpy](https://t.me/maixpy)
 * Github issues: [github.com/sipeed/maixpy/issues](https://github.com/sipeed/maixpy/issues)
-
-
-
